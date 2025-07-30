@@ -1,10 +1,8 @@
 import { UserRole } from '../types/user-role.enum';
 
-export interface UserEntity {
-    id: number | bigint;
+export interface CreateUserDto {
     email: string;
     name: string;
     role: UserRole;
-    createdAt: Date;
-    uid: string | null;
+    uid?: string;
 }

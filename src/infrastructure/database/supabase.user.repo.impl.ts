@@ -1,7 +1,11 @@
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { UserRepository } from 'src/domain/repositories/user.repository';
-import { SupabaseUserMapper } from '../mappers/supabase.user.mapper';
+import {
+    SupabaseUserMapper,
+    SupabaseUserRow,
+} from '../mappers/supabase.user.mapper';
 import { SupabaseService } from './supabase.service';
+import { CreateUserDto } from 'src/domain/dto/create-user.dto';
 
 export class SupabaseUserRepository
     extends SupabaseService
@@ -21,7 +25,7 @@ export class SupabaseUserRepository
             return null;
         }
 
-        return SupabaseUserMapper.toEntity(data);
+        return SupabaseUserMapper.toEntity(data as SupabaseUserRow[]);
     }
 
     async findByEmail(email: string): Promise<UserEntity | null> {
@@ -38,10 +42,10 @@ export class SupabaseUserRepository
             return null;
         }
 
-        return SupabaseUserMapper.toEntity(data);
+        return SupabaseUserMapper.toEntity(data as SupabaseUserRow[]);
     }
 
-    async create(data: any): Promise<UserEntity> {
+    async create(data: CreateUserDto): Promise<UserEntity> {
         const { data: createdUser, error } = await this.supabase
             .from('users')
             .insert(data)
@@ -51,6 +55,6 @@ export class SupabaseUserRepository
             throw new Error('Failed to create user');
         }
 
-        return SupabaseUserMapper.toEntity(createdUser);
+        return SupabaseUserMapper.toEntity(createdUser as SupabaseUserRow[]);
     }
 }
