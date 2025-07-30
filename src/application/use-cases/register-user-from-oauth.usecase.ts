@@ -9,6 +9,7 @@ import {
 } from 'src/domain/repositories/user.repository';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
+import { CreateUserDto } from 'src/domain/dto/create-user.dto';
 
 export class RegisterUserFromOAuth {
     constructor(
@@ -30,10 +31,10 @@ export class RegisterUserFromOAuth {
 
         const user = await this.userRepository.create({
             uid: userData.uid,
-            email: userData.email,
-            name: userData.name,
+            email: userData.email!,
+            name: userData.name!,
             role: UserRole.USER,
-        });
+        } as CreateUserDto);
 
         return user;
     }
