@@ -6,6 +6,8 @@ import {
 } from '../mappers/supabase.user.mapper';
 import { SupabaseService } from './supabase.service';
 import { CreateUserDto } from 'src/domain/dto/create-user.dto';
+import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
+import { UserFromOAuth } from 'src/domain/services/auth.service';
 
 export class SupabaseUserRepository
     extends SupabaseService
@@ -46,6 +48,36 @@ export class SupabaseUserRepository
     }
 
     async create(data: CreateUserDto): Promise<UserEntity> {
+        const { data: createdUser, error } = await this.supabase
+            .from('users')
+            .insert(data)
+            .select('*');
+
+        if (error) {
+            throw new Error('Failed to create user');
+        }
+
+        return SupabaseUserMapper.toEntity(createdUser as SupabaseUserRow[]);
+    }
+
+    async registerOrganizerFromOAuth(
+        data: UserFromOAuth,
+    ): Promise<OrganizerEntity> {
+        const { data: createdUser, error } = await this.supabase
+            .from('users')
+            .insert(data)
+            .select('*');
+
+        if (error) {
+            throw new Error('Failed to create organizer');
+        }
+
+        return SupabaseUserMapper.toOrganizerEntity(
+            createdUser as SupabaseUserRow[],
+        );
+    }
+
+    async registerUserFromOAuth(data: UserFromOAuth): Promise<UserEntity> {
         const { data: createdUser, error } = await this.supabase
             .from('users')
             .insert(data)

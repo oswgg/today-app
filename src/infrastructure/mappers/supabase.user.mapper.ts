@@ -1,4 +1,5 @@
 import { UserResponse } from '@supabase/supabase-js';
+import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
@@ -33,6 +34,17 @@ export class SupabaseUserMapper {
             email: data.email!,
             name: data.user_metadata.name as string,
             uid: data.id,
+        };
+    }
+
+    static toOrganizerEntity(rows: SupabaseUserRow[]): OrganizerEntity {
+        return {
+            id: rows[0].id,
+            email: rows[0].email,
+            name: rows[0].name,
+            role: UserRole.ORGANIZER,
+            createdAt: new Date(rows[0].created_at),
+            uid: rows[0].uid,
         };
     }
 }

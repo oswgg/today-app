@@ -9,13 +9,11 @@ import { UserRole } from 'src/domain/types/user-role.enum';
 
 describe('GetUser use case', () => {
     let getUser: GetUser;
-    let mockUserRepo: jest.Mocked<UserRepository>;
+    let mockUserRepo: jest.Mocked<Pick<UserRepository, 'findById'>>;
 
     beforeEach(async () => {
         mockUserRepo = {
             findById: jest.fn(),
-            findByEmail: jest.fn(),
-            create: jest.fn(),
         };
 
         const module: TestingModule = await Test.createTestingModule({
