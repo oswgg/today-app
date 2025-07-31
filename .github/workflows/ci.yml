@@ -10,10 +10,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
-      
+    
     strategy:
-        matrix:
-            node-version: ['20.x']
+      matrix:
+        node-version: ['20.x']
 
     services:
       postgres:
@@ -37,7 +37,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }} 
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -45,27 +45,27 @@ jobs:
 
       - name: Create .env file for tests
         run: |
-            if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-                cat > .env << EOF
-                SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-                SUPABASE_DIRECT_URL=${{ secrets.SUPABASE_DIRECT_URL }}
-                SUPABASE_AUTH_URL=${{ secrets.SUPABASE_AUTH_URL }}
-                SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}
-                DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db
-                EOF
-            else
-                cat > .env.development << EOF
-                SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-                SUPABASE_DIRECT_URL=${{ secrets.SUPABASE_DIRECT_URL }}
-                SUPABASE_AUTH_URL=${{ secrets.SUPABASE_AUTH_URL }}
-                SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}
-                DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db
-                EOF
-            fi
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            cat > .env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_DIRECT_URL=${{ secrets.SUPABASE_DIRECT_URL }}
+          SUPABASE_AUTH_URL=${{ secrets.SUPABASE_AUTH_URL }}
+          SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db
+          EOF
+          else
+            cat > .env.development << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_DIRECT_URL=${{ secrets.SUPABASE_DIRECT_URL }}
+          SUPABASE_AUTH_URL=${{ secrets.SUPABASE_AUTH_URL }}
+          SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db
+          EOF
+          fi
 
       - name: Generate Prisma client
         run: |
-          if [[ "${{ github.ref }}" = "refs/heads/main" ]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             npm run prisma:generate:prod
           else
             npm run prisma:generate:dev
@@ -73,7 +73,7 @@ jobs:
 
       - name: Run database migrations
         run: |
-          if [[ "${{ github.ref }}" = "refs/heads/main" ]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             npm run prisma:migrate:prod
           else
             npm run prisma:migrate:dev
@@ -94,8 +94,8 @@ jobs:
     environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     
     strategy:
-        matrix:
-            node-version: ['20.x']
+      matrix:
+        node-version: ['20.x']
 
     steps:
       - name: Checkout code
@@ -126,8 +126,8 @@ jobs:
     environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
     
     strategy:
-        matrix:
-            node-version: ['20.x']
+      matrix:
+        node-version: ['20.x']
 
     steps:
       - name: Checkout code
