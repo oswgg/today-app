@@ -25,6 +25,8 @@ describe('RegisterOrganizerFromOAuth use case', () => {
             create: jest.fn(),
             findByEmail: jest.fn(),
             findById: jest.fn(),
+            registerOrganizerFromOAuth: jest.fn(),
+            registerUserFromOAuth: jest.fn(),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -48,11 +50,11 @@ describe('RegisterOrganizerFromOAuth use case', () => {
             uid: 'test-uid',
         };
 
-        mockUserRepo.create.mockResolvedValue(organizer);
+        mockUserRepo.registerOrganizerFromOAuth.mockResolvedValue(organizer);
         mockAuthService.getUserFromOAuthToken.mockResolvedValue({
             email: organizer.email,
             name: organizer.name,
-            uid: organizer.uid,
+            uid: organizer.uid as string,
         });
 
         expect(await registerOrganizer.execute('test-token')).toEqual(
@@ -73,7 +75,7 @@ describe('RegisterOrganizerFromOAuth use case', () => {
         mockAuthService.getUserFromOAuthToken.mockResolvedValue({
             email: existingOrganizer.email,
             name: existingOrganizer.name,
-            uid: existingOrganizer.uid,
+            uid: existingOrganizer.uid as string,
         });
         mockUserRepo.findByEmail.mockResolvedValue(existingOrganizer);
 

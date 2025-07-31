@@ -8,8 +8,6 @@ import {
     UserRepository,
 } from 'src/domain/repositories/user.repository';
 import { UserEntity } from 'src/domain/entities/user.entity';
-import { UserRole } from 'src/domain/types/user-role.enum';
-import { CreateUserDto } from 'src/domain/dto/create-user.dto';
 
 export class RegisterUserFromOAuth {
     constructor(
@@ -23,18 +21,13 @@ export class RegisterUserFromOAuth {
         const userData = await this.authService.getUserFromOAuthToken(token);
 
         const existingUser = await this.userRepository.findByEmail(
-            userData.email!,
+            userData.email,
         );
         if (existingUser) {
             throw new Error('User with the same email already exists');
         }
 
-        const user = await this.userRepository.create({
-            uid: userData.uid,
-            email: userData.email!,
-            name: userData.name!,
-            role: UserRole.USER,
-        } as CreateUserDto);
+        const user = await this.userRepository.registerUserFromOAuth(userData);
 
         return user;
     }
