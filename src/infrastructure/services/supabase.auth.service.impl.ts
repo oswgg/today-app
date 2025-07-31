@@ -1,5 +1,4 @@
-import { AuthService } from 'src/domain/services/auth.service';
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { AuthService, UserFromOAuth } from 'src/domain/services/auth.service';
 import { SupabaseUserMapper } from 'src/infrastructure/mappers/supabase.user.mapper';
 import { SupabaseService } from '../database/supabase.service';
 
@@ -20,7 +19,7 @@ export class SupabaseAuthService
         return data.url;
     }
 
-    async getUserFromOAuthToken(token: string): Promise<Partial<UserEntity>> {
+    async getUserFromOAuthToken(token: string): Promise<UserFromOAuth> {
         const { data, error } = await this.supabase.auth.getUser(token);
 
         if (error) {

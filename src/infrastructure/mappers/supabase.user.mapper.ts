@@ -1,5 +1,6 @@
 import { UserResponse } from '@supabase/supabase-js';
 import { UserEntity } from 'src/domain/entities/user.entity';
+import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
 
 export type SupabaseUserRow = {
@@ -23,15 +24,14 @@ export class SupabaseUserMapper {
         };
     }
 
-    static fromOAuth(data: UserResponse['data']['user']): Partial<UserEntity> {
+    static fromOAuth(data: UserResponse['data']['user']): UserFromOAuth {
         if (!data) {
             throw new Error('Invalid OAuth user response');
         }
 
         return {
-            email: data.email,
+            email: data.email!,
             name: data.user_metadata.name as string,
-            createdAt: new Date(data.created_at),
             uid: data.id,
         };
     }
