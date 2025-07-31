@@ -35,7 +35,7 @@ export class SupabaseUserRepository
             .eq('email', email);
 
         if (error) {
-            return null;
+            throw new Error('Failed to find user by email', { cause: error });
         }
 
         if (data.length === 0) {

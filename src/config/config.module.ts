@@ -7,7 +7,7 @@ import { SupabaseConfig } from './supabase.config';
     imports: [
         NestConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: ['.env.local', '.env'],
+            envFilePath: ['.env'],
         }),
     ],
     providers: [SupabaseConfig],
