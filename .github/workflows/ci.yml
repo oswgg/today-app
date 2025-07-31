@@ -10,13 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
-    env:
-      SUPABASE_AUTH_URL: ${{ vars.SUPABASE_AUTH_URL }}
-      SUPABASE_API_KEY: ${{ vars.SUPABASE_API_KEY }}
-      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-      SUPABASE_DIRECT_URL: ${{ vars.SUPABASE_DIRECT_URL }}
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-      ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
       
     strategy:
         matrix:
@@ -52,19 +45,39 @@ jobs:
 
       - name: Create .env file for tests
         run: |
-          cat > .env << EOF
-          SUPABASE_URL=${{ env.SUPABASE_URL }}
-          SUPABASE_DIRECT_URL=${{ env.SUPABASE_DIRECT_URL }}
-          SUPABASE_AUTH_URL=${{ env.SUPABASE_AUTH_URL }}
-          SUPABASE_API_KEY=${{ env.SUPABASE_API_KEY }}
-          DATABASE_URL=${{ env.DATABASE_URL }}
-          EOF
+            if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+                cat > .env << EOF
+                SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+                SUPABASE_DIRECT_URL=${{ secrets.SUPABASE_DIRECT_URL }}
+                SUPABASE_AUTH_URL=${{ secrets.SUPABASE_AUTH_URL }}
+                SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}
+                DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db
+                EOF
+            else
+                cat > .env.development << EOF
+                SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+                SUPABASE_DIRECT_URL=${{ secrets.SUPABASE_DIRECT_URL }}
+                SUPABASE_AUTH_URL=${{ secrets.SUPABASE_AUTH_URL }}
+                SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}
+                DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db
+                EOF
+            fi
 
       - name: Generate Prisma client
-        run: npx prisma generate
+        run: |
+          if [[ "${{ github.ref }}" = "refs/heads/main" ]]; then
+            npm run prisma:generate:prod
+          else
+            npm run prisma:generate:dev
+          fi
 
       - name: Run database migrations
-        run: npx prisma migrate deploy
+        run: |
+          if [[ "${{ github.ref }}" = "refs/heads/main" ]]; then
+            npm run prisma:migrate:prod
+          else
+            npm run prisma:migrate:dev
+          fi
 
       - name: Run unit tests
         run: npm run test
