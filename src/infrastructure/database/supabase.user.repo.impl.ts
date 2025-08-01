@@ -72,15 +72,9 @@ export class SupabaseUserRepository
             throw new Error('Failed to create organizer');
         }
 
-        const organizer = SupabaseUserMapper.toOrganizerEntity(
+        return SupabaseUserMapper.toOrganizerEntity(
             createdUser as SupabaseUserRow[],
         );
-
-        await this.supabase.auth.admin.updateUserById(organizer.uid!, {
-            app_metadata: { role: organizer.role },
-        });
-
-        return organizer;
     }
 
     async registerUserFromOAuth(data: UserFromOAuth): Promise<UserEntity> {
@@ -93,14 +87,6 @@ export class SupabaseUserRepository
             throw new Error('Failed to create user');
         }
 
-        const user = SupabaseUserMapper.toEntity(
-            createdUser as SupabaseUserRow[],
-        );
-
-        await this.supabase.auth.admin.updateUserById(user.uid!, {
-            app_metadata: { role: user.role },
-        });
-
-        return user;
+        return SupabaseUserMapper.toEntity(createdUser as SupabaseUserRow[]);
     }
 }

@@ -13,9 +13,7 @@ import { UserRole } from 'src/domain/types/user-role.enum';
 
 describe('RegisterOrganizerFromOAuth use case', () => {
     let registerOrganizer: RegisterOrganizerFromOAuth;
-    let mockAuthService: jest.Mocked<
-        Pick<AuthService, 'getGoogleOAuthURL' | 'getUserFromOAuthToken'>
-    >;
+    let mockAuthService: jest.Mocked<AuthService>;
     let mockUserRepo: jest.Mocked<UserRepository>;
 
     beforeEach(async () => {
