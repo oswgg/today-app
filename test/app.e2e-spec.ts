@@ -34,7 +34,7 @@ describe('AppController (e2e)', () => {
         describe('GET /auth/google', () => {
             it('should redirect to Google OAuth URL', () => {
                 return request(app.getHttpServer())
-                    .get('/auth/google')
+                    .get('/auth/oauth/google')
                     .expect(302) // Redirect status
                     .expect(
                         'Location',
@@ -43,10 +43,10 @@ describe('AppController (e2e)', () => {
             });
         });
 
-        describe('POST /auth/google/callback', () => {
+        describe('POST /auth/register/oauth', () => {
             it('should return 400 for invalid user_type', () => {
                 return request(app.getHttpServer())
-                    .post('/auth/google/callback')
+                    .post('/auth/register/oauth')
                     .send({
                         token: 'invalid-token',
                         user_type: 'invalid-role',
@@ -56,7 +56,7 @@ describe('AppController (e2e)', () => {
 
             it('should return 400 for missing token', () => {
                 return request(app.getHttpServer())
-                    .post('/auth/google/callback')
+                    .post('/auth/register/oauth')
                     .send({
                         user_type: UserRole.USER,
                     })
@@ -65,7 +65,7 @@ describe('AppController (e2e)', () => {
 
             it('should return 400 for missing user_type', () => {
                 return request(app.getHttpServer())
-                    .post('/auth/google/callback')
+                    .post('/auth/register/oauth')
                     .send({
                         token: 'test-token',
                     })
@@ -74,7 +74,7 @@ describe('AppController (e2e)', () => {
 
             it('should handle valid user registration request', () => {
                 return request(app.getHttpServer())
-                    .post('/auth/google/callback')
+                    .post('/auth/register/oauth')
                     .send({
                         token: 'valid-oauth-token',
                         user_type: UserRole.USER,
