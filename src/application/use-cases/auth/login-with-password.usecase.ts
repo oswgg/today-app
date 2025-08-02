@@ -1,5 +1,5 @@
 import { Inject, UnauthorizedException } from '@nestjs/common';
-import { LoginWithPasswordDto } from 'src/domain/dto/login-with-password.dto';
+import { LoginWithPasswordDto } from 'src/application/dtos/auth/login-with-password.dto';
 import {
     USER_REPO_TOKEN,
     UserRepository,

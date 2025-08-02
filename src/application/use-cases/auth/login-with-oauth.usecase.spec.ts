@@ -4,13 +4,13 @@ import {
     LoginResult,
     UserFromOAuth,
 } from 'src/domain/services/auth.service';
-import { LoginWithOAuth } from './login-with-oauth.usecase';
 import {
     USER_REPO_TOKEN,
     UserRepository,
 } from 'src/domain/repositories/user.repository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRole } from 'src/domain/types/user-role.enum';
+import { LoginWithOAuth } from './login-with-oauth.usecase';
 
 describe('LoginWithOAuth use case', () => {
     let usecase: LoginWithOAuth;

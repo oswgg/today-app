@@ -1,5 +1,5 @@
 import { BadRequestException, Controller, Get, Param } from '@nestjs/common';
-import { GetUser } from 'src/application/use-cases/get-user.usecase';
+import { GetUser } from 'src/application/use-cases/auth/get-user.usecase';
 import { UserEntity } from 'src/domain/entities/user.entity';
 
 @Controller('user')

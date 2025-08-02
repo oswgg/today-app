@@ -7,12 +7,12 @@ import {
     Res,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { GetGoogleOAuthURL } from 'src/application/use-cases/get-google-oauth-url.usecase';
-import { LoginWithOAuth } from 'src/application/use-cases/login-with-oauth.usecase';
-import { LoginWithPassword } from 'src/application/use-cases/login-with-password.usecase';
-import { RegisterOrganizerFromOAuth } from 'src/application/use-cases/register-organizer-from-oauth.usecase';
-import { RegisterUserFromOAuth } from 'src/application/use-cases/register-user-from-oauth.usecase';
-import { LoginWithPasswordDto } from 'src/domain/dto/login-with-password.dto';
+import { LoginWithPasswordDto } from 'src/application/dtos/auth/login-with-password.dto';
+import { GetGoogleOAuthURL } from 'src/application/use-cases/auth/get-google-oauth-url.usecase';
+import { LoginWithOAuth } from 'src/application/use-cases/auth/login-with-oauth.usecase';
+import { LoginWithPassword } from 'src/application/use-cases/auth/login-with-password.usecase';
+import { RegisterOrganizerFromOAuth } from 'src/application/use-cases/auth/register-organizer-from-oauth.usecase';
+import { RegisterUserFromOAuth } from 'src/application/use-cases/auth/register-user-from-oauth.usecase';
 import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { LoginResult } from 'src/domain/services/auth.service';

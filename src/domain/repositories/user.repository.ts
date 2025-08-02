@@ -1,7 +1,7 @@
 import { UserEntity } from 'src/domain/entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { OrganizerEntity } from '../entities/organizer.entity';
 import { UserFromOAuth } from '../services/auth.service';
+import { CreateUserDto } from 'src/application/dtos/user/create-user.dto';
 
 export abstract class UserRepository {
     abstract findById(id: number): Promise<UserEntity | null>;
