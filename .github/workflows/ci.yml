@@ -73,6 +73,12 @@ jobs:
             npm run prisma:generate:dev
           fi
 
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+        
       - name: Run database migrations
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
@@ -80,12 +86,6 @@ jobs:
           else
             npm run prisma:migrate:dev
           fi
-
-      - name: Run unit tests
-        run: npm run test
-
-      - name: Run e2e tests
-        run: npm run test:e2e
 
       - name: Build application
         run: npm run build
