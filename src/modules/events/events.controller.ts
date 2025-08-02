@@ -12,7 +12,7 @@ export class EventsController {
     ) {}
 
     @Get('/')
-    async listAll() {
+    async getAllEvents(): Promise<EventEntity[]> {
         return await this.listEvents.execute();
     }
 
