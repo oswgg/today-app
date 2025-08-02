@@ -55,12 +55,7 @@ jobs:
         run: |
             npm run prisma:generate:dev
 
-      - name: Run unit tests
-        run: npm run test
 
-      - name: Run e2e tests
-        run: npm run test:e2e
-        
       - name: Run database migrations
         run: |
             npm run prisma:migrate:dev
@@ -68,6 +63,12 @@ jobs:
       - name: Run database seed
         run: |
             npm run seed:dev:up
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Run e2e tests
+        run: npm run test:e2e
 
       - name: Build application
         run: npm run build
