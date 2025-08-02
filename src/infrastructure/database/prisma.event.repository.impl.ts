@@ -12,7 +12,7 @@ export class PrismaEventsRepository
     async create(data: CreateEventDto): Promise<EventEntity> {
         const { title, start_time, end_time, location } = data;
 
-        const _event = await this.events.create({
+        const _event = await this.event.create({
             data: { title, start_time, end_time, location },
         });
 
@@ -24,11 +24,11 @@ export class PrismaEventsRepository
     }
 
     async findById(id: number): Promise<EventEntity | null> {
-        return await this.events.findUnique({ where: { id } });
+        return await this.event.findUnique({ where: { id } });
     }
 
     async findAll(options?: QueryOptions<EventEntity>): Promise<EventEntity[]> {
-        return await this.events.findMany({
+        return await this.event.findMany({
             where: options?.where,
             orderBy: options?.sort,
             take: options?.limit,

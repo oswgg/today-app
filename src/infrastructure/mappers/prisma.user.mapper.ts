@@ -1,10 +1,10 @@
 import { UserEntity } from 'src/domain/entities/user.entity';
-import { users } from 'src/../generated/prisma';
+import { User } from 'src/../generated/prisma';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 
 export class PrismaUserMapper {
-    static toEntity(data: users): UserEntity {
+    static toEntity(data: User): UserEntity {
         return {
             id: data.id,
             email: data.email,
@@ -15,7 +15,7 @@ export class PrismaUserMapper {
         };
     }
 
-    static toOrganizerEntity(data: users): OrganizerEntity {
+    static toOrganizerEntity(data: User): OrganizerEntity {
         return {
             id: data.id,
             email: data.email,
