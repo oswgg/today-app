@@ -3,10 +3,10 @@ import { UserRepository } from 'src/domain/repositories/user.repository';
 import { PrismaService } from './prisma.service';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { PrismaUserMapper } from 'src/infrastructure/mappers/prisma.user.mapper';
-import { CreateUserDto } from 'src/domain/dto/create-user.dto';
 import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
+import { CreateUserDto } from 'src/application/dtos/user/create-user.dto';
 
 @Injectable()
 export class PrismaUserRepository extends UserRepository {

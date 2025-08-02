@@ -1,4 +1,4 @@
-import { UserRole } from '../types/user-role.enum';
+import { UserRole } from 'generated/prisma';
 
 export interface CreateUserDto {
     email: string;
