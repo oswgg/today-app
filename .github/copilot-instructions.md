@@ -56,7 +56,7 @@ The application follows a modular **Clean Architecture** with clearly defined la
 
 ### Development Workflow
 
-- **Continuous Integration:** Automated testing and deployment using GitHub Actions (`./github/workflows`).
+- **Continuous Integration:** Automated testing and deployment using GitHub Actions (`.github/workflows`).
 - **Version Control:** Git for version management and collaboration.
 - **Code Quality:** ESLint and Prettier for code formatting and linting.
 - **Environment Configuration:** `.env` files managed with `@nestjs/config` for environment-specific settings.
