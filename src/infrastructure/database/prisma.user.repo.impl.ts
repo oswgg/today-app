@@ -9,23 +9,22 @@ import { UserRole } from 'src/domain/types/user-role.enum';
 import { CreateUserDto } from 'src/application/dtos/user/create-user.dto';
 
 @Injectable()
-export class PrismaUserRepository extends UserRepository {
-    constructor(private readonly prisma: PrismaService) {
-        super();
-    }
-
+export class PrismaUserRepository
+    extends PrismaService
+    implements UserRepository
+{
     async findById(id: number): Promise<UserEntity | null> {
-        const user = await this.prisma.users.findUnique({ where: { id } });
+        const user = await this.user.findUnique({ where: { id } });
         return user ? PrismaUserMapper.toEntity(user) : null;
     }
 
     async findByEmail(email: string): Promise<UserEntity | null> {
-        const user = await this.prisma.users.findUnique({ where: { email } });
+        const user = await this.user.findUnique({ where: { email } });
         return user ? PrismaUserMapper.toEntity(user) : null;
     }
 
     async create(data: CreateUserDto): Promise<UserEntity> {
-        const user = await this.prisma.users.create({
+        const user = await this.user.create({
             data,
         });
         return PrismaUserMapper.toEntity(user);
@@ -34,7 +33,7 @@ export class PrismaUserRepository extends UserRepository {
     async registerOrganizerFromOAuth(
         data: UserFromOAuth,
     ): Promise<OrganizerEntity> {
-        const user = await this.prisma.users.create({
+        const user = await this.user.create({
             data: {
                 email: data.email,
                 name: data.name,
@@ -47,7 +46,7 @@ export class PrismaUserRepository extends UserRepository {
     }
 
     async registerUserFromOAuth(data: UserFromOAuth): Promise<UserEntity> {
-        const user = await this.prisma.users.create({
+        const user = await this.user.create({
             data: {
                 email: data.email,
                 name: data.name,
