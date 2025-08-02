@@ -17,14 +17,12 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "prisma:migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev",
-        "prisma:migrate:prod": "dotenv -e .env -- npx prisma migrate deploy",
-        "prisma:generate:dev": "dotenv -e .env.development -- npx prisma generate",
-        "prisma:generate:prod": "dotenv -e .env -- npx prisma generate",
-        "seed:dev:up": "dotenv -e .env.development -- ts-node ./prisma/seeders/seed.ts up",
-        "seed:dev:down": "dotenv -e .env.development -- ts-node ./prisma/seeders/seed.ts down",
-        "seed:prod:up": "dotenv -e .env -- ts-node ./prisma/seeders/seed.ts up",
-        "seed:prod:down": "dotenv -e .env -- ts-node ./prisma/seeders/seed.ts down"
+        "prisma:migrate:dev": "npx prisma migrate dev",
+        "prisma:migrate:deploy": "npx prisma migrate deploy",
+        "prisma:generate": "npx prisma generate",
+        "prisma:seed:up": "ts-node ./prisma/seeders/seed.ts up",
+        "prisma:seed:down": "./prisma/seeders/seed.ts down",
+        "prisma:reset": "npx prisma migrate reset -f --skip-seed"
     },
     "dependencies": {
         "@nestjs/common": "^11.0.1",
