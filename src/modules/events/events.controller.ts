@@ -18,9 +18,8 @@ export class EventsController {
         @Query('lng', { transform: (v: string) => parseFloat(v) }) lng?: number,
         @Query('radius', { transform: (v: string) => parseFloat(v) })
         radius?: number,
-        @Query('unit') unit?: string,
     ): Promise<EventEntity[]> {
-        return await this.listEvents.execute(lat, lng, radius, unit);
+        return await this.listEvents.execute(lat, lng, radius);
     }
 
     @Post('/')

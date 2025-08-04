@@ -16,7 +16,7 @@ export class ListAllEvents {
         lat?: number,
         lng?: number,
         radius: number = 5,
-        unit: string = 'km',
+        // unit: string = 'km',
     ): Promise<EventEntity[]> {
         let bounding:
             | {
