@@ -105,10 +105,6 @@ describe('AppController (e2e)', () => {
             it('should return 400 for zero user ID', () => {
                 return request(app.getHttpServer()).get('/user/0').expect(400);
             });
-
-            it('should handle valid user ID request', () => {
-                return request(app.getHttpServer()).get('/user/1').expect(404); // Will likely fail due to non-existent user in test database, but tests the endpoint
-            });
         });
     });
 

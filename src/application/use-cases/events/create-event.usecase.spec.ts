@@ -5,6 +5,7 @@ import {
 import { CreateEvent } from './create-event.usecase';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
+import { EventEntity } from 'src/domain/entities/event.entity';
 
 describe('CreateEvent use case', () => {
     let usecase: CreateEvent;
@@ -32,17 +33,22 @@ describe('CreateEvent use case', () => {
         const data: CreateEventDto = {
             title: 'Test Event',
             description: 'This is a test event',
+            organizer_id: 1,
             start_time: new Date(),
             end_time: new Date(),
             location: 'Test Location',
         };
 
-        const eventEntity = {
+        const eventEntity: EventEntity = {
             id: 1,
             title: 'Test Event',
             description: 'This is a test event',
             start_time: new Date(),
+            organizer_id: 1,
             end_time: new Date(),
+            lat: null,
+            lng: null,
+            categories: [],
             location: 'Test Location',
             created_at: new Date(),
         };
