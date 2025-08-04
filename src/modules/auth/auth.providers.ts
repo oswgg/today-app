@@ -5,9 +5,15 @@ import { LoginWithPassword } from 'src/application/use-cases/auth/login-with-pas
 import { RegisterOrganizerFromOAuth } from 'src/application/use-cases/auth/register-organizer-from-oauth.usecase';
 import { RegisterUserFromOAuth } from 'src/application/use-cases/auth/register-user-from-oauth.usecase';
 import { AUTH_SERVICE_TOKEN } from 'src/domain/services/auth.service';
+import { JWT_SERVICE_TOKEN } from 'src/domain/services/jwt.service';
+import { NestJwtService } from 'src/infrastructure/services/nest.jwt.service.impl';
 import { SupabaseAuthService } from 'src/infrastructure/services/supabase.auth.service.impl';
 
 export const AuthServiceProviders: Provider[] = [
+    {
+        provide: JWT_SERVICE_TOKEN,
+        useClass: NestJwtService,
+    },
     {
         provide: AUTH_SERVICE_TOKEN,
         useClass: SupabaseAuthService,

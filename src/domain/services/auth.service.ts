@@ -1,13 +1,8 @@
-import { UserRole } from 'generated/prisma';
 import { UserEntity } from '../entities/user.entity';
+import { UserRole } from '../types/user-role.enum';
 export interface UserFromOAuth
     extends Omit<Pick<UserEntity, 'name' | 'email' | 'uid'>, 'uid'> {
     uid: string;
-}
-
-export interface Session {
-    access_token: string;
-    refresh_token: string;
 }
 
 export interface LoginResult {
@@ -15,11 +10,13 @@ export interface LoginResult {
         email: string;
         role: string;
     };
-    // session: Session;
+    token: string;
 }
 
 export interface Claims {
-    role: UserRole;
+    user_email: string;
+    user_name: string;
+    user_role: UserRole;
     user_id: number | bigint;
 }
 

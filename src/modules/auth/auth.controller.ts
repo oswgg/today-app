@@ -17,7 +17,9 @@ import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { LoginResult } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
+import { Public } from '../shared/guards/public.guard';
 
+@Public()
 @Controller('auth')
 export class AuthController {
     constructor(

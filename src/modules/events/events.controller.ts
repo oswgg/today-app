@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { Request } from 'express';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { CreateEvent } from 'src/application/use-cases/events/create-event.usecase';
 import { ListAllEvents } from 'src/application/use-cases/events/list-all-events.usecase';

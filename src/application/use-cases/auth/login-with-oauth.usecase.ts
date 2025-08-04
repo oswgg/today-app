@@ -29,7 +29,9 @@ export class LoginWithOAuth {
         }
 
         const authResult = await this.authService.loginWithOAuth(token, {
-            role: user.role,
+            user_role: user.role,
+            user_email: user.email,
+            user_name: user.name,
             user_id: user.id,
         });
 
