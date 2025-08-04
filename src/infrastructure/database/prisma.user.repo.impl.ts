@@ -7,10 +7,14 @@ import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { CreateUserDto } from 'src/application/dtos/user/create-user.dto';
+import { Prisma } from 'generated/prisma';
+import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
+
+export type UserQueryOptions = QueryOptions<UserEntity>;
 
 @Injectable()
 export class PrismaUserRepository
-    extends PrismaService
+    extends PrismaService<UserEntity, Prisma.UserFindManyArgs>
     implements UserRepository
 {
     async findById(id: number): Promise<UserEntity | null> {
