@@ -46,9 +46,7 @@ describe('OrganizerGuard', () => {
     });
 });
 
-function createMockExecutionContext(
-    request: Partial<ExpressRequestWithUser> = {},
-) {
+function createMockExecutionContext(request: Partial<ExpressRequestWithUser>) {
     const mockContext = {
         switchToHttp: () => ({
             getRequest: () => request,
