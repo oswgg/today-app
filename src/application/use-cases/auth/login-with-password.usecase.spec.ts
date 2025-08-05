@@ -42,6 +42,7 @@ describe('LoginWithPasswordUsecase', () => {
 
         const loginResult: LoginResult = {
             user: { email, role: UserRole.USER },
+            token: 'test-token',
         };
 
         const testUser = {

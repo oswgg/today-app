@@ -9,6 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { JWT_SERVICE_TOKEN, JwtService } from 'src/domain/services/jwt.service';
 import { IS_PUBLIC_KEY } from './public.guard';
+import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -27,7 +28,9 @@ export class AuthGuard implements CanActivate {
             return true;
         }
 
-        const request: Request = context.switchToHttp().getRequest();
+        const request: ExpressRequestWithUser = context
+            .switchToHttp()
+            .getRequest();
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
@@ -40,6 +43,8 @@ export class AuthGuard implements CanActivate {
             if (!payload) {
                 throw new UnauthorizedException('Invalid token');
             }
+
+            request.user = payload.user;
 
             return true;
         } catch {

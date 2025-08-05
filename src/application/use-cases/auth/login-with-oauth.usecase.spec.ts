@@ -51,6 +51,7 @@ describe('LoginWithOAuth use case', () => {
 
         const loginResult: LoginResult = {
             user: { email, role: UserRole.USER },
+            token: 'test-token',
         };
 
         const testUser = {

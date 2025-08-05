@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { CreateEvent } from 'src/application/use-cases/events/create-event.usecase';
 import { ListAllEvents } from 'src/application/use-cases/events/list-all-events.usecase';
 import { EventEntity } from 'src/domain/entities/event.entity';
+import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
 
 @Controller('events')
 export class EventsController {
@@ -21,6 +22,7 @@ export class EventsController {
         return await this.listEvents.execute(lat, lng, radius);
     }
 
+    @UseGuards(OrganizerGuard)
     @Post('/')
     async create(@Body() body: CreateEventDto): Promise<EventEntity> {
         const info: CreateEventDto = {
