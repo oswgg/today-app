@@ -30,7 +30,9 @@ export class LoginWithPassword {
             password,
             {
                 user_id: user.id,
-                role: user.role,
+                user_email: user.email,
+                user_name: user.name,
+                user_role: user.role,
             },
         );
 

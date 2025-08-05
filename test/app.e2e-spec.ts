@@ -4,21 +4,54 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { UserRole } from '../src/domain/types/user-role.enum';
 import { App } from 'supertest/types';
+import { JWT_SERVICE_TOKEN, JwtService } from 'src/domain/services/jwt.service';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from 'src/modules/shared/guards/auth.guard';
 
 describe('AppController (e2e)', () => {
     let app: INestApplication<App>;
+    let jwtService: jest.Mocked<JwtService>;
 
     beforeEach(async () => {
+        jwtService = {
+            sign: jest.fn(),
+            verify: jest.fn((token: string) => {
+                if (
+                    token === 'valid-oauth-token' ||
+                    token === 'Bearer valid-oauth-token'
+                ) {
+                    return {
+                        user: {
+                            id: 1,
+                            name: 'Test User',
+                            email: 'test@example.com',
+                            role: UserRole.USER,
+                        },
+                        iat: Date.now() / 1000,
+                        exp: Date.now() / 1000 + 3600,
+                    };
+                }
+                throw new Error('Invalid token');
+            }),
+        };
+
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
-        }).compile();
+        })
+            .overrideProvider(JWT_SERVICE_TOKEN)
+            .useValue(jwtService)
+            .overrideProvider(APP_GUARD)
+            .useClass(AuthGuard)
+            .compile();
 
         app = moduleFixture.createNestApplication();
         await app.init();
     });
 
     afterEach(async () => {
-        await app.close();
+        if (app) {
+            await app.close();
+        }
     });
 
     describe('App Controller', () => {
@@ -89,28 +122,39 @@ describe('AppController (e2e)', () => {
             it('should return 400 for invalid user ID (string)', () => {
                 return request(app.getHttpServer())
                     .get('/user/invalid-id')
+                    .set('Authorization', 'Bearer valid-oauth-token')
                     .expect(400);
             });
 
             it('should return 404 for non-existent user', () => {
                 return request(app.getHttpServer())
                     .get('/user/999999')
+                    .set('Authorization', 'Bearer valid-oauth-token')
                     .expect(404);
             });
 
             it('should return 400 for negative user ID', () => {
-                return request(app.getHttpServer()).get('/user/-1').expect(400);
+                return request(app.getHttpServer())
+                    .get('/user/-1')
+                    .set('Authorization', 'Bearer valid-oauth-token')
+                    .expect(400);
             });
 
             it('should return 400 for zero user ID', () => {
-                return request(app.getHttpServer()).get('/user/0').expect(400);
+                return request(app.getHttpServer())
+                    .get('/user/0')
+                    .set('Authorization', 'Bearer valid-oauth-token')
+                    .expect(400);
             });
         });
     });
 
     describe('Health Check', () => {
         it('should return 200 for root endpoint', () => {
-            return request(app.getHttpServer()).get('/').expect(200);
+            return request(app.getHttpServer())
+                .get('/')
+                .set('Authorization', 'Bearer valid-oauth-token')
+                .expect(200);
         });
     });
 });
