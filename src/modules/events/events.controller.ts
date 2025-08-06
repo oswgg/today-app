@@ -4,6 +4,9 @@ import { CreateEvent } from 'src/application/use-cases/events/create-event.useca
 import { ListAllEvents } from 'src/application/use-cases/events/list-all-events.usecase';
 import { EventEntity } from 'src/domain/entities/event.entity';
 import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
+import { ValidationPipe } from '../shared/pipes/validation.pipe';
+import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
+import { ZodCreateEvent } from 'src/infrastructure/http/validator/zod/events/zod.create-event.schema';
 
 @Controller('events')
 export class EventsController {
@@ -24,19 +27,10 @@ export class EventsController {
 
     @UseGuards(OrganizerGuard)
     @Post('/')
-    async create(@Body() body: CreateEventDto): Promise<EventEntity> {
-        const info: CreateEventDto = {
-            title: body.title,
-            description: body.description,
-            start_time: new Date(body.start_time),
-            end_time: body.end_time && new Date(body.end_time),
-            organizer_id: 1,
-            lat: body.lat,
-            lng: body.lng,
-            location: body.location,
-            categories: body.categories,
-        };
-
-        return await this.createEvent.execute(info);
+    async create(
+        @Body(new ValidationPipe(new ZodValidator(ZodCreateEvent)))
+        body: CreateEventDto,
+    ): Promise<EventEntity> {
+        return await this.createEvent.execute(body);
     }
 }
