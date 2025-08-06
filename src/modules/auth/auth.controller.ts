@@ -18,6 +18,13 @@ import { UserEntity } from 'src/domain/entities/user.entity';
 import { LoginResult } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { Public } from '../shared/guards/public.guard';
+import { ValidationPipe } from '../shared/pipes/validation.pipe';
+import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
+import { ZodLoginWithPassword } from 'src/infrastructure/http/validator/zod/auth/zod.login-with-password.schema';
+import { ZodLoginWitOAuth } from 'src/infrastructure/http/validator/zod/auth/zod.login-with-oauth.schema';
+import { LoginWitOAuthDto } from 'src/application/dtos/auth/login-with-oaut.dto';
+import { ZodRegisterWithOAuth } from 'src/infrastructure/http/validator/zod/auth/zod.register-with-oauth.schema';
+import { RegisterWithOAuthDto } from 'src/application/dtos/auth/register-with-oauth.dto';
 
 @Public()
 @Controller('auth')
@@ -37,7 +44,8 @@ export class AuthController {
 
     @Post('register/oauth')
     OAuthRegister(
-        @Body() body: { token: string; user_type: UserRole },
+        @Body(new ValidationPipe(new ZodValidator(ZodRegisterWithOAuth)))
+        body: RegisterWithOAuthDto,
     ): Promise<UserEntity | OrganizerEntity> {
         const { token, user_type } = body;
 
@@ -60,13 +68,17 @@ export class AuthController {
 
     @Post('login')
     async LoginWithPassword(
-        @Body() body: LoginWithPasswordDto,
+        @Body(new ValidationPipe(new ZodValidator(ZodLoginWithPassword)))
+        body: LoginWithPasswordDto,
     ): Promise<LoginResult> {
         return await this.loginWithPassword.execute(body);
     }
 
     @Post('login/oauth')
-    OAuthLogin(@Body() body: { token: string }): Promise<LoginResult> {
+    OAuthLogin(
+        @Body(new ValidationPipe(new ZodValidator(ZodLoginWitOAuth)))
+        body: LoginWitOAuthDto,
+    ): Promise<LoginResult> {
         const { token } = body;
 
         if (!token) throw new BadRequestException('Missing token');
