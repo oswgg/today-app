@@ -1,10 +1,10 @@
 import { EventsRepository } from 'src/domain/repositories/events.repository';
-import { PrismaService } from './prisma.service';
 import { EventEntity } from 'src/domain/entities/event.entity';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
 import { Prisma } from 'generated/prisma';
-import { PrismaEventMapper } from '../mappers/prisma.event.mapper';
+import { PrismaEventMapper } from 'src/infrastructure/mappers/prisma.event.mapper';
+import { PrismaService } from './prisma.service';
 
 export type EventRelations = keyof Prisma.EventInclude;
 export type EventQueryOptions = QueryOptions<EventEntity>;

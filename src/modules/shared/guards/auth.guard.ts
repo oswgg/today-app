@@ -8,7 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { JWT_SERVICE_TOKEN, JwtService } from 'src/domain/services/jwt.service';
-import { IS_PUBLIC_KEY } from './public.guard';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';

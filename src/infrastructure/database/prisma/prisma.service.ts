@@ -121,7 +121,7 @@ export class PrismaService<T, E extends object>
         return prismaQuery as E;
     }
 
-    protected buildInclude(include?: IncludeOptions): object | undefined {
+    private buildInclude(include?: IncludeOptions): object | undefined {
         if (!include) return undefined;
         return Object.fromEntries(
             include.map((relation) => [

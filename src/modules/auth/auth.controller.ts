@@ -17,7 +17,7 @@ import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { LoginResult } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
-import { Public } from '../shared/guards/public.guard';
+import { Public } from '../shared/decorators/public.decorator';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import { ZodLoginWithPassword } from 'src/infrastructure/http/validator/zod/auth/zod.login-with-password.schema';

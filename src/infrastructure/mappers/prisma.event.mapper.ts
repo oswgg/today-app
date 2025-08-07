@@ -1,4 +1,10 @@
-import { Category, Event, EventCategories, User } from 'generated/prisma';
+import {
+    Category,
+    Event,
+    EventCategories,
+    User,
+    Venue,
+} from 'generated/prisma';
 import { EventEntity } from 'src/domain/entities/event.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
 
@@ -8,6 +14,7 @@ export class PrismaEventMapper {
         event: Event & {
             organizer?: User;
             categories?: EventCategories[] & { category: Category };
+            venue?: Venue;
         },
     ): EventEntity {
         return {
@@ -17,6 +24,7 @@ export class PrismaEventMapper {
             start_time: event.start_time,
             end_time: event.end_time,
             organizer_id: event.organizer_id,
+            venue_id: event.venue_id,
             location: event.location,
             lat: event.lat,
             lng: event.lng,
@@ -39,6 +47,22 @@ export class PrismaEventMapper {
                           description: cat.category.description,
                       }),
                   )
+                : undefined,
+            venue: event.venue
+                ? {
+                      id: event.venue.id,
+                      name: event.venue.name,
+                      address: event.venue.address,
+                      city: event.venue.city,
+                      lat: event.venue.lat,
+                      lng: event.venue.lng,
+                      description: event.venue.description,
+                      phone: event.venue.phone,
+                      website: event.venue.website,
+                      image_url: event.venue.image_url,
+                      organizer_id: event.venue.organizer_id,
+                      created_at: event.venue.created_at,
+                  }
                 : undefined,
         };
     }
