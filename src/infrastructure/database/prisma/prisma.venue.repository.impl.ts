@@ -8,6 +8,7 @@ import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
 import { PrismaVenueMapper } from 'src/infrastructure/mappers/prisma.venue.mapper';
 import { PrismaEventMapper } from 'src/infrastructure/mappers/prisma.event.mapper';
 import { boundingBox } from 'src/domain/shared/utils/bounding-box';
+import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
 
 export type VenueEntityRelations = keyof Prisma.VenueInclude;
 export type VenueQueryOptions = QueryOptions<VenueEntity>;
@@ -86,6 +87,18 @@ export class PrismaVenueRepository
                 image_url: venue.image_url,
                 organizer_id: venue.organizer_id,
             },
+        });
+
+        return PrismaVenueMapper.toEntity(_venue);
+    }
+
+    async updateById(
+        id: number | bigint,
+        data: InputUpdateVenueDto,
+    ): Promise<VenueEntity> {
+        const _venue = await this.venue.update({
+            where: { id },
+            data,
         });
 
         return PrismaVenueMapper.toEntity(_venue);

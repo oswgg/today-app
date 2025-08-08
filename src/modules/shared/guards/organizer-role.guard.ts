@@ -5,9 +5,9 @@ import {
     ForbiddenException,
 } from '@nestjs/common';
 import { UserRole } from 'src/domain/types/user-role.enum';
-import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
+import { ExpressRequestWithUser } from 'src/infrastructure/http/types/express/express.request-with-user';
 
 @Injectable()
 export class OrganizerGuard implements CanActivate {

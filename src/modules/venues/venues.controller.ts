@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import {
@@ -11,12 +22,22 @@ import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
 import { CreateVenue } from 'src/application/use-cases/venues';
 import { ListVenues } from 'src/application/use-cases/venues/list-venues.usecase';
 import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
+import { VenueEntity } from 'src/domain/entities/venue.entity';
+import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
+import { ZodUpdateVenueSchema } from 'src/infrastructure/http/validator/zod/venues/zod.update-venue.schema';
+import { Register } from '../shared/decorators/register.decorator';
+import { BelongsTo } from '../shared/decorators/belongs.decorator';
+import { BelongingGuard } from '../shared/guards/belonging.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterConfigFactory } from 'src/config/multer.config';
+import { UpdateVenue } from 'src/application/use-cases/venues/update-venue.usecase';
 
 @Controller('venues')
 export class VenuesController {
     constructor(
         private readonly listVenues: ListVenues,
         private readonly createVenue: CreateVenue,
+        private readonly updateVenue: UpdateVenue,
     ) {}
     @Get('/')
     async getAllVenues() {
@@ -34,5 +55,28 @@ export class VenuesController {
             ...body,
             organizer_id: user.id,
         });
+    }
+
+    @Put('/:id')
+    @UseGuards(OrganizerGuard, BelongingGuard)
+    @BelongsTo({
+        table: 'venues',
+        owner: 'organizer_id',
+        identify: 'id',
+        entity: 'Venue',
+    })
+    @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
+    async update(
+        @Register() venue: VenueEntity,
+        @UploadedFile() file: Express.Multer.File,
+        @Param('id', ParseIntPipe) id: number,
+        @Body(new ValidationPipe(new ZodValidator(ZodUpdateVenueSchema)))
+        body: InputUpdateVenueDto,
+    ) {
+        if (file) {
+            body.image_url = file.path;
+        }
+
+        return await this.updateVenue.execute(id, body);
     }
 }

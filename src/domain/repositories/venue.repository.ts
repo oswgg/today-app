@@ -2,6 +2,7 @@ import { InputCreateVenueDto } from 'src/application/dtos/venues/create-venue.dt
 import { VenueEntity } from '../entities/venue.entity';
 import { EventEntity } from '../entities/event.entity';
 import { VenueQueryOptions } from 'src/infrastructure/database/prisma/prisma.venue.repository.impl';
+import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
 
 export interface VenueRepository {
     findById(id: number): Promise<VenueEntity | null>;
@@ -13,6 +14,10 @@ export interface VenueRepository {
     findAll(options?: VenueQueryOptions): Promise<VenueEntity[]>;
     create(
         venue: InputCreateVenueDto & { organizer_id: number | bigint },
+    ): Promise<VenueEntity>;
+    updateById(
+        id: number | bigint,
+        data: InputUpdateVenueDto,
     ): Promise<VenueEntity>;
     getEvents(venue_id: number): Promise<EventEntity[]>;
 }

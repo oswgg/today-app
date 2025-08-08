@@ -10,6 +10,8 @@ import { NestJwtService } from './infrastructure/services/nest.jwt.service.impl'
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './modules/shared/guards/auth.guard';
 import { VenuesModule } from './modules/venues/venues.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
     providers: [
@@ -23,7 +25,17 @@ import { VenuesModule } from './modules/venues/venues.module';
         },
         AppService,
     ],
-    imports: [ConfigModule, AuthModule, UserModule, EventsModule, VenuesModule],
+    imports: [
+        ServeStaticModule.forRoot({
+            rootPath: join(process.cwd(), 'public'),
+            serveRoot: '/public/',
+        }),
+        ConfigModule,
+        AuthModule,
+        UserModule,
+        EventsModule,
+        VenuesModule,
+    ],
     controllers: [AppController],
 })
 export class AppModule {}
