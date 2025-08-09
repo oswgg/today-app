@@ -10,12 +10,15 @@ import { Request } from 'express';
 import { JWT_SERVICE_TOKEN, JwtService } from 'src/domain/services/jwt.service';
 import { IS_PUBLIC_KEY } from './public.guard';
 import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
+import { I18nService } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
         @Inject(JWT_SERVICE_TOKEN) private readonly jwtService: JwtService,
         private reflector: Reflector,
+        private readonly translator: I18nService<I18nTranslations>,
     ) {}
 
     canActivate(context: ExecutionContext): boolean {
@@ -34,21 +37,27 @@ export class AuthGuard implements CanActivate {
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
-            throw new UnauthorizedException('Missing or invalid token');
+            throw new UnauthorizedException(
+                this.translator.t('auth.errors.missing_token'),
+            );
         }
 
         try {
             const payload = this.jwtService.verify(token);
 
             if (!payload) {
-                throw new UnauthorizedException('Invalid token');
+                throw new UnauthorizedException(
+                    this.translator.t('auth.errors.invalid_token'),
+                );
             }
 
             request.user = payload.user;
 
             return true;
         } catch {
-            throw new UnauthorizedException('Invalid token');
+            throw new UnauthorizedException(
+                this.translator.t('auth.errors.invalid_token'),
+            );
         }
     }
 

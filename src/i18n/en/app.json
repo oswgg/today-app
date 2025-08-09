@@ -1,0 +1,12 @@
+{
+    "hello": "Hello World!",
+    "errors": {
+        "general": "An error occurred",
+        "not_found": "Resource not found",
+        "unauthorized": "Unauthorized access",
+        "forbidden": "Forbidden access"
+    },
+    "success": {
+        "operation_completed": "Operation completed successfully"
+    }
+}

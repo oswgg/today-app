@@ -10,6 +10,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('RegisterOrganizerFromOAuth use case', () => {
     let registerOrganizer: RegisterOrganizerFromOAuth;
@@ -37,6 +38,7 @@ describe('RegisterOrganizerFromOAuth use case', () => {
                 { provide: USER_REPO_TOKEN, useValue: mockUserRepo },
                 { provide: AUTH_SERVICE_TOKEN, useValue: mockAuthService },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         registerOrganizer = module.get(RegisterOrganizerFromOAuth);
@@ -82,7 +84,7 @@ describe('RegisterOrganizerFromOAuth use case', () => {
         mockUserRepo.findByEmail.mockResolvedValue(existingOrganizer);
 
         await expect(registerOrganizer.execute('test-token')).rejects.toThrow(
-            'User already exists',
+            'Ya existe un usuario con el mismo email',
         );
     });
 

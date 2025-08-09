@@ -6,6 +6,7 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JWTPayload } from 'src/domain/entities/jwt-payload.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { Request } from 'express';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('AuthGuard', () => {
     let guard: AuthGuard;
@@ -34,6 +35,7 @@ describe('AuthGuard', () => {
                     useValue: reflector,
                 },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         guard = module.get<AuthGuard>(AuthGuard);
@@ -108,7 +110,7 @@ describe('AuthGuard', () => {
         });
 
         expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
-        expect(() => guard.canActivate(context)).toThrow('Invalid token');
+        expect(() => guard.canActivate(context)).toThrow('Token inválido');
     });
 });
 

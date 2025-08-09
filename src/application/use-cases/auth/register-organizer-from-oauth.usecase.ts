@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { ForbiddenException, Inject } from '@nestjs/common';
 import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import {
     USER_REPO_TOKEN,
@@ -8,13 +8,15 @@ import {
     AUTH_SERVICE_TOKEN,
     AuthService,
 } from 'src/domain/services/auth.service';
-
+import { I18nService } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 export class RegisterOrganizerFromOAuth {
     constructor(
         @Inject(AUTH_SERVICE_TOKEN)
         private readonly authService: AuthService,
         @Inject(USER_REPO_TOKEN)
         private readonly userRepository: UserRepository,
+        private readonly translator: I18nService<I18nTranslations>,
     ) {}
 
     async execute(token: string): Promise<OrganizerEntity> {
@@ -22,7 +24,9 @@ export class RegisterOrganizerFromOAuth {
 
         const existingUser = await this.userRepository.findByEmail(user.email);
         if (existingUser) {
-            throw new Error('User already exists');
+            throw new ForbiddenException(
+                this.translator.t('users.errors.email_already_exists'),
+            );
         }
 
         const organizer =

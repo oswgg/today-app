@@ -5,6 +5,7 @@ import {
 import { ListAllEvents } from './list-all-events.usecase';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEntity } from 'src/domain/entities/event.entity';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('ListAllEvents use case', () => {
     let useCase: ListAllEvents;
@@ -23,6 +24,7 @@ describe('ListAllEvents use case', () => {
                     useValue: mockEventsRepository,
                 },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         useCase = module.get<ListAllEvents>(ListAllEvents);

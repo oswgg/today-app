@@ -10,6 +10,7 @@ import {
     UserRepository,
 } from 'src/domain/repositories/user.repository';
 import { UserRole } from 'src/domain/types/user-role.enum';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('LoginWithPasswordUsecase', () => {
     let usecase: LoginWithPassword;
@@ -31,6 +32,7 @@ describe('LoginWithPasswordUsecase', () => {
                 { provide: AUTH_SERVICE_TOKEN, useValue: mockAuthService },
                 { provide: USER_REPO_TOKEN, useValue: mockUserRepo },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         usecase = module.get<LoginWithPassword>(LoginWithPassword);
@@ -69,7 +71,7 @@ describe('LoginWithPasswordUsecase', () => {
         mockUserRepo.findByEmail.mockResolvedValue(null);
 
         await expect(usecase.execute({ email, password })).rejects.toThrow(
-            'Invalid email or password',
+            'Credenciales inválidas',
         );
     });
 

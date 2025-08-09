@@ -1,0 +1,15 @@
+{
+    "errors": {
+        "not_found": "Usuario no encontrado",
+        "already_exists_generic": "El usuario ya existe",
+        "email_already_exists": "Ya existe un usuario con el mismo email",
+        "invalid_id": "ID de usuario inválido",
+        "update_failed": "Error al actualizar el usuario",
+        "delete_failed": "Error al eliminar el usuario"
+    },
+    "success": {
+        "user_created": "Usuario creado correctamente",
+        "user_updated": "Usuario actualizado correctamente",
+        "user_deleted": "Usuario eliminado correctamente"
+    }
+}

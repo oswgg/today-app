@@ -6,6 +6,7 @@ import {
 import { UserEntity } from 'src/domain/entities/user.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { GetUser } from './get-user.usecase';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('GetUser use case', () => {
     let getUser: GetUser;
@@ -24,6 +25,7 @@ describe('GetUser use case', () => {
                     useValue: mockUserRepo,
                 },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         getUser = module.get(GetUser);

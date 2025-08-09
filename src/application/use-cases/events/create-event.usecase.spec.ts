@@ -6,6 +6,7 @@ import { CreateEvent } from './create-event.usecase';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { EventEntity } from 'src/domain/entities/event.entity';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('CreateEvent use case', () => {
     let usecase: CreateEvent;
@@ -24,6 +25,7 @@ describe('CreateEvent use case', () => {
                     useValue: mockEventRepository,
                 },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         usecase = module.get(CreateEvent);

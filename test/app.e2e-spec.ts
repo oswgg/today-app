@@ -7,6 +7,7 @@ import { App } from 'supertest/types';
 import { JWT_SERVICE_TOKEN, JwtService } from 'src/domain/services/jwt.service';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/modules/shared/guards/auth.guard';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('AppController (e2e)', () => {
     let app: INestApplication<App>;
@@ -36,7 +37,7 @@ describe('AppController (e2e)', () => {
         };
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [AppModule, ConfigModule],
         })
             .overrideProvider(JWT_SERVICE_TOKEN)
             .useValue(jwtService)
@@ -55,11 +56,20 @@ describe('AppController (e2e)', () => {
     });
 
     describe('App Controller', () => {
-        it('/ (GET) - should return hello world', () => {
+        it('/ (GET) - should return hello world in english', () => {
+            return request(app.getHttpServer())
+                .get('/?lang=en')
+                .expect(200)
+                .expect('Hello World!');
+        });
+    });
+
+    describe('App Controller', () => {
+        it('/ (GET) - should return hello world in spanish', () => {
             return request(app.getHttpServer())
                 .get('/')
                 .expect(200)
-                .expect('Hello World!');
+                .expect('Hola mundo!');
         });
     });
 
@@ -109,10 +119,10 @@ describe('AppController (e2e)', () => {
                 return request(app.getHttpServer())
                     .post('/auth/register/oauth')
                     .send({
-                        token: 'valid-oauth-token',
+                        token: 'invalid-oauth-token',
                         user_type: UserRole.USER,
                     })
-                    .expect(500); // Will likely fail due to invalid token, but tests the endpoint
+                    .expect(401); // Will likely fail due to invalid token, but tests the endpoint, should return 401 for invalid token
             });
         });
     });

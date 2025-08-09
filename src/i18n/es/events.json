@@ -1,0 +1,15 @@
+{
+    "errors": {
+        "start_time_before_end_time": "La hora de inicio debe ser antes de la hora de finalización",
+        "invalid_date_format": "El formato de fecha es inválido",
+        "event_not_found": "Evento no encontrado",
+        "invalid_location": "Coordenadas de ubicación inválidas",
+        "invalid_category": "Categoría inválida",
+        "failed_to_create": "Fallo al crear el evento"
+    },
+    "success": {
+        "event_created": "El evento se creó correctamente",
+        "event_updated": "El evento se actualizó correctamente",
+        "event_deleted": "El evento se eliminó correctamente"
+    }
+}

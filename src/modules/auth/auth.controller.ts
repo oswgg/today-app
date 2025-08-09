@@ -25,6 +25,8 @@ import { ZodLoginWitOAuth } from 'src/infrastructure/http/validator/zod/auth/zod
 import { LoginWitOAuthDto } from 'src/application/dtos/auth/login-with-oaut.dto';
 import { ZodRegisterWithOAuth } from 'src/infrastructure/http/validator/zod/auth/zod.register-with-oauth.schema';
 import { RegisterWithOAuthDto } from 'src/application/dtos/auth/register-with-oauth.dto';
+import { I18nService } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 @Public()
 @Controller('auth')
@@ -35,6 +37,7 @@ export class AuthController {
         private readonly registerOganizerFromOAuth: RegisterOrganizerFromOAuth,
         private readonly loginWithOAuth: LoginWithOAuth,
         private readonly loginWithPassword: LoginWithPassword,
+        private translator: I18nService<I18nTranslations>,
     ) {}
 
     @Get('oauth/google')
@@ -49,11 +52,19 @@ export class AuthController {
     ): Promise<UserEntity | OrganizerEntity> {
         const { token, user_type } = body;
 
-        if (!token) throw new BadRequestException('Missing token');
-        if (!user_type) throw new BadRequestException('Missing user_type');
+        if (!token)
+            throw new BadRequestException(
+                this.translator.t('auth.errors.invalid_token'),
+            );
+        if (!user_type)
+            throw new BadRequestException(
+                this.translator.t('auth.errors.missing_user_type'),
+            );
 
         if (user_type !== UserRole.USER && user_type !== UserRole.ORGANIZER) {
-            throw new BadRequestException('Invalid user_type');
+            throw new BadRequestException(
+                this.translator.t('auth.errors.invalid_user_type'),
+            );
         }
 
         if (user_type === UserRole.USER) {
@@ -63,7 +74,9 @@ export class AuthController {
             return this.registerOganizerFromOAuth.execute(body.token);
         }
 
-        throw new Error('Invalid user_type');
+        throw new BadRequestException(
+            this.translator.t('auth.errors.invalid_user_type'),
+        );
     }
 
     @Post('login')
@@ -81,7 +94,10 @@ export class AuthController {
     ): Promise<LoginResult> {
         const { token } = body;
 
-        if (!token) throw new BadRequestException('Missing token');
+        if (!token)
+            throw new BadRequestException(
+                this.translator.t('auth.errors.missing_token'),
+            );
         return this.loginWithOAuth.execute(body.token);
     }
 }
