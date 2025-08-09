@@ -96,7 +96,7 @@ export class AuthController {
 
         if (!token)
             throw new BadRequestException(
-                this.translator.t('auth.errors.missing_token'),
+                this.translator.t('auth.errors.invalid_token'),
             );
         return this.loginWithOAuth.execute(body.token);
     }
