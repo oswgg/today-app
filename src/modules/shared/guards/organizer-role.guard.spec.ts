@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { OrganizerGuard } from './organizer-role.guard';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('OrganizerGuard', () => {
     let guard: OrganizerGuard;
@@ -10,6 +11,7 @@ describe('OrganizerGuard', () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [OrganizerGuard],
+            imports: [ConfigModule],
         }).compile();
 
         guard = module.get<OrganizerGuard>(OrganizerGuard);
@@ -42,7 +44,7 @@ describe('OrganizerGuard', () => {
             },
         });
 
-        expect(guard.canActivate(context)).toBe(false);
+        expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
     });
 });
 

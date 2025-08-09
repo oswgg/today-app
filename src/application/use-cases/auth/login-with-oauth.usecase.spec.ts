@@ -11,6 +11,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { LoginWithOAuth } from './login-with-oauth.usecase';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('LoginWithOAuth use case', () => {
     let usecase: LoginWithOAuth;
@@ -40,6 +41,7 @@ describe('LoginWithOAuth use case', () => {
                     useValue: mockUserRepo,
                 },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         usecase = module.get(LoginWithOAuth);

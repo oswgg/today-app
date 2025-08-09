@@ -6,8 +6,8 @@ import { Public } from './modules/shared/guards/public.guard';
 export class AppController {
     constructor(private readonly appService: AppService) {}
 
-    @Public()
     @Get()
+    @Public()
     getHello(): string {
         return this.appService.getHello();
     }

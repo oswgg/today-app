@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseConfig } from './supabase.config';
+import { ConfigModule } from './config.module';
 
 describe('SupabaseConfig', () => {
     let config: SupabaseConfig;
@@ -17,6 +18,7 @@ describe('SupabaseConfig', () => {
                     },
                 },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         config = module.get<SupabaseConfig>(SupabaseConfig);

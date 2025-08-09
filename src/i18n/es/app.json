@@ -1,0 +1,12 @@
+{
+    "hello": "Hola mundo!",
+    "errors": {
+        "general": "Ocurrió un error",
+        "not_found": "Recurso no encontrado",
+        "unauthorized": "Acceso no autorizado",
+        "forbidden": "Acceso prohibido"
+    },
+    "success": {
+        "operation_completed": "Operación completada con éxito"
+    }
+}

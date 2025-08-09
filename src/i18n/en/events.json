@@ -1,0 +1,15 @@
+{
+    "errors": {
+        "start_time_before_end_time": "Start time must be before end time",
+        "invalid_date_format": "Invalid date format",
+        "event_not_found": "Event not found",
+        "invalid_location": "Invalid location coordinates",
+        "invalid_category": "Invalid category",
+        "failed_to_create": "Failed to create event"
+    },
+    "success": {
+        "event_created": "Event created successfully",
+        "event_updated": "Event updated successfully",
+        "event_deleted": "Event deleted successfully"
+    }
+}

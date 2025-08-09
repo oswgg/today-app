@@ -1,7 +1,6 @@
 import { EventsRepository } from 'src/domain/repositories/events.repository';
 import { PrismaService } from './prisma.service';
 import { EventEntity } from 'src/domain/entities/event.entity';
-import { InternalServerErrorException } from '@nestjs/common';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
 import { Prisma } from 'generated/prisma';
@@ -50,10 +49,6 @@ export class PrismaEventsRepository
                     event_id: _event.id,
                 })),
             });
-        }
-
-        if (!_event) {
-            throw new InternalServerErrorException('Failed to create event');
         }
 
         return PrismaEventMapper.toEntity(_event);

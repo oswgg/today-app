@@ -1,9 +1,18 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+    CanActivate,
+    ExecutionContext,
+    Injectable,
+    ForbiddenException,
+} from '@nestjs/common';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
+import { I18nService } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 @Injectable()
 export class OrganizerGuard implements CanActivate {
+    constructor(private readonly translator: I18nService<I18nTranslations>) {}
+
     canActivate(context: ExecutionContext): boolean {
         const request: ExpressRequestWithUser = context
             .switchToHttp()
@@ -12,7 +21,9 @@ export class OrganizerGuard implements CanActivate {
         const user_role = request.user.role;
 
         if (user_role !== UserRole.ORGANIZER) {
-            return false;
+            throw new ForbiddenException(
+                this.translator.t('auth.errors.organizer_role_required'),
+            );
         }
 
         return true;

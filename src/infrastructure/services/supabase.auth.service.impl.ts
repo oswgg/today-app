@@ -9,21 +9,28 @@ import { SupabaseService } from '../database/supabase.service';
 import {
     Inject,
     InternalServerErrorException,
+    Logger,
     UnauthorizedException,
 } from '@nestjs/common';
 import { JWT_SERVICE_TOKEN, JwtService } from 'src/domain/services/jwt.service';
 import { SupabaseConfig } from 'src/config/supabase.config';
+import { I18nService } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 export class SupabaseAuthService
     extends SupabaseService
     implements AuthService
 {
+    private readonly logger: Logger;
+
     constructor(
         supabaseConfig: SupabaseConfig,
         @Inject(JWT_SERVICE_TOKEN)
         private readonly jwtService: JwtService,
+        private readonly translator: I18nService<I18nTranslations>,
     ) {
         super(supabaseConfig);
+        this.logger = new Logger('SupabaseAuthService');
     }
     async getGoogleOAuthURL(): Promise<string> {
         // return await this.supabase.auth.signInWithOAuth({ provider: 'google' });
@@ -42,7 +49,18 @@ export class SupabaseAuthService
         const { data, error } = await this.supabase.auth.getUser(token);
 
         if (error) {
-            throw new Error('Failed to get user from OAuth token');
+            if (error.code === 'bad_jwt') {
+                // Invalid token expired, revoked or malformed.
+                throw new UnauthorizedException(
+                    this.translator.t('auth.errors.invalid_token'),
+                );
+            }
+
+            this.logger.error(`Failed to get user from OAuth token`, error);
+
+            throw new InternalServerErrorException( // Unknown error occurred
+                this.translator.t('app.errors.general'),
+            );
         }
 
         return SupabaseUserMapper.fromOAuth(data.user);
@@ -64,16 +82,9 @@ export class SupabaseAuthService
 
         if (updateError) {
             throw new InternalServerErrorException(
-                'Failed to update user claims',
+                this.translator.t('app.errors.general'),
             );
         }
-        // const { data: sessionData, error: sessionError } =
-        //     await this.supabase.auth.getSession();
-
-        // if (sessionError || !sessionData.session) {
-        //     throw new InternalServerErrorException('Failed to get session');
-        // }
-        //
 
         const customToken: string = this.jwtService.sign({
             user: {
@@ -90,10 +101,6 @@ export class SupabaseAuthService
                 role: claims.user_role,
             },
             token: customToken,
-            // session: {
-            //     access_token: sessionData.session.access_token,
-            //     refresh_token: sessionData.session.refresh_token,
-            // },
         };
     }
 
@@ -107,21 +114,17 @@ export class SupabaseAuthService
             password,
         });
 
-        if (error || !data.user) {
-            throw new UnauthorizedException('Failed to login with password');
-        }
+        if (error) {
+            if (error.code === 'bad_password') {
+                throw new UnauthorizedException(
+                    this.translator.t('auth.errors.invalid_credentials'),
+                );
+            }
 
-        const { error: updateError } =
-            await this.supabase.auth.admin.updateUserById(data.user.id, {
-                user_metadata: {
-                    role: claims.user_role,
-                    user_id: claims.user_id,
-                },
-            });
-
-        if (updateError) {
+            // Unknown error occurred
+            this.logger.error(`Failed to login with password`, error);
             throw new InternalServerErrorException(
-                'Failed to update user claims',
+                this.translator.t('app.errors.general'),
             );
         }
 
@@ -140,10 +143,6 @@ export class SupabaseAuthService
                 role: claims.user_role,
             },
             token: customToken,
-            // session: {
-            //     access_token: sessionData.session.access_token,
-            //     refresh_token: sessionData.session.refresh_token,
-            // },
         };
     }
 }
