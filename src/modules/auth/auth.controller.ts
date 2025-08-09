@@ -54,7 +54,7 @@ export class AuthController {
 
         if (!token)
             throw new BadRequestException(
-                this.translator.t('auth.errors.invalid_token'),
+                this.translator.t('auth.errors.missing_token'),
             );
         if (!user_type)
             throw new BadRequestException(
