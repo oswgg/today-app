@@ -72,7 +72,6 @@ export class VenuesController {
     })
     @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
     async update(
-        @Register() venue: VenueEntity,
         @UploadedFile() file: Express.Multer.File,
         @Param('id', ParseIntPipe) id: number,
         @Body(new ValidationPipe(new ZodValidator(ZodUpdateVenueSchema)))
