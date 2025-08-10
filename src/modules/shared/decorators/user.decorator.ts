@@ -7,7 +7,7 @@ export const User = createParamDecorator(
         const user = request.user;
 
         if (!user) {
-            throw new Error('User not found');
+            throw new UnauthorizedException('User not found');
         }
 
         return user;
