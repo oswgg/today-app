@@ -10,6 +10,7 @@ import { PrismaResourceOwnerService } from 'src/infrastructure/database/prisma/p
 import { FILE_SERVICE_TOKEN } from 'src/domain/services/files.service';
 import { PureFileService } from 'src/infrastructure/services/pure.service.impl';
 import { UpdateVenue } from 'src/application/use-cases/venues/update-venue.usecase';
+import { DeleteVenue } from 'src/application/use-cases/venues/delete-venue.usecase';
 
 export const VenuesServicesProviders: Provider[] = [
     PrismaService,
@@ -31,4 +32,5 @@ export const VenuesUseCasesProviders: Provider[] = [
     ListVenues,
     CreateVenue,
     UpdateVenue,
+    DeleteVenue,
 ];

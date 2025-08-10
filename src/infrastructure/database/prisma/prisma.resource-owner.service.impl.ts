@@ -2,8 +2,10 @@ import { ResourceOwnerService } from 'src/domain/services/resource-owner.service
 import { PrismaService } from './prisma.service';
 
 const prismaTableToModelMapping: { [key: string]: string } = {
+    users: 'user',
     events: 'event',
     venues: 'venue',
+    categories: 'category',
 };
 
 export class PrismaResourceOwnerService

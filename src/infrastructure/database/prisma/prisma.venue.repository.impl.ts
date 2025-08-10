@@ -104,6 +104,11 @@ export class PrismaVenueRepository
         return PrismaVenueMapper.toEntity(_venue);
     }
 
+    async deleteById(id: number | bigint): Promise<void> {
+        await this.venue.delete({ where: { id } });
+        return;
+    }
+
     async getEvents(venue_id: number): Promise<EventEntity[]> {
         const _events = await this.event.findMany({
             where: {

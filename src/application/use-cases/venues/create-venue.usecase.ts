@@ -1,4 +1,5 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 import {
     InputCreateVenueDto,
     OutputCreateVenueDto,
@@ -7,14 +8,15 @@ import {
     VENUE_REPO_TOKEN,
     VenueRepository,
 } from 'src/domain/repositories/venue.repository';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 @Injectable()
 export class CreateVenue {
     constructor(
         @Inject(VENUE_REPO_TOKEN)
         private readonly venueRepo: VenueRepository,
+        private readonly translator: I18nService<I18nTranslations>,
     ) {}
-
     async execute(
         input: InputCreateVenueDto & { organizer_id: number | bigint },
     ): Promise<OutputCreateVenueDto> {
@@ -32,7 +34,7 @@ export class CreateVenue {
 
         if (venuesAtSameLocation.length > 0) {
             throw new ForbiddenException(
-                'A venue already exists at the given location.',
+                this.translator.t('venues.errors.already_exists.by_location'),
             );
         }
 
@@ -45,7 +47,7 @@ export class CreateVenue {
 
         if (venueWithSameName) {
             throw new ForbiddenException(
-                'A venue with the same name already exists for the given organizer.',
+                this.translator.t('venues.errors.already_exists.by_name'),
             );
         }
 

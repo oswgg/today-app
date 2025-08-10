@@ -19,6 +19,7 @@ export interface VenueRepository {
         id: number | bigint,
         data: InputUpdateVenueDto,
     ): Promise<VenueEntity>;
+    deleteById(id: number | bigint): Promise<void>;
     getEvents(venue_id: number): Promise<EventEntity[]>;
 }
 

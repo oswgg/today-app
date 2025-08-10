@@ -7,6 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InputCreateVenueDto } from 'src/application/dtos/venues/create-venue.dto';
 import { VenueEntity } from 'src/domain/entities/venue.entity';
 import { ForbiddenException } from '@nestjs/common';
+import { ConfigModule } from 'src/config/config.module';
 
 describe('CreateVenue use case', () => {
     let createVenueUseCase: jest.Mocked<CreateVenue>;
@@ -28,6 +29,7 @@ describe('CreateVenue use case', () => {
                 CreateVenue,
                 { provide: VENUE_REPO_TOKEN, useValue: mockVenueRepository },
             ],
+            imports: [ConfigModule],
         }).compile();
 
         createVenueUseCase = module.get(CreateVenue);

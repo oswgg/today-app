@@ -1,0 +1,10 @@
+{
+    "entity_name": "Local",
+    "errors": {
+        "not_found": "Local no encontrado",
+        "already_exists": {
+            "by_location": "Ya existe un local con la misma ubicación",
+            "by_name": "Ya existe un local con el mismo nombre"
+        }
+    }
+}

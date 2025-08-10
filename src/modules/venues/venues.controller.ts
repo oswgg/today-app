@@ -1,7 +1,10 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
+    HttpCode,
+    HttpStatus,
     Param,
     ParseIntPipe,
     Post,
@@ -31,6 +34,7 @@ import { BelongingGuard } from '../shared/guards/belonging.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterConfigFactory } from 'src/config/multer.config';
 import { UpdateVenue } from 'src/application/use-cases/venues/update-venue.usecase';
+import { DeleteVenue } from 'src/application/use-cases/venues/delete-venue.usecase';
 
 @Controller('venues')
 export class VenuesController {
@@ -38,6 +42,7 @@ export class VenuesController {
         private readonly listVenues: ListVenues,
         private readonly createVenue: CreateVenue,
         private readonly updateVenue: UpdateVenue,
+        private readonly deleteVenue: DeleteVenue,
     ) {}
     @Get('/')
     async getAllVenues() {
@@ -78,5 +83,18 @@ export class VenuesController {
         }
 
         return await this.updateVenue.execute(id, body);
+    }
+
+    @Delete('/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @UseGuards(OrganizerGuard, BelongingGuard)
+    @BelongsTo({
+        table: 'venues',
+        owner: 'organizer_id',
+        identify: 'id',
+        message_path: 'venues.errors.not_found',
+    })
+    async delete(@Param('id', ParseIntPipe) id: number) {
+        return await this.deleteVenue.execute(id);
     }
 }

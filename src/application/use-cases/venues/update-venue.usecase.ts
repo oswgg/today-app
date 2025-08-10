@@ -1,4 +1,5 @@
 import { ForbiddenException, Inject, NotFoundException } from '@nestjs/common';
+import { I18nService } from 'nestjs-i18n';
 import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
 import { FileDestinations } from 'src/config/files.config';
 import { VenueEntity } from 'src/domain/entities/venue.entity';
@@ -10,6 +11,7 @@ import {
     FILE_SERVICE_TOKEN,
     FileService,
 } from 'src/domain/services/files.service';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 export class UpdateVenue {
     constructor(
@@ -17,6 +19,7 @@ export class UpdateVenue {
         private readonly venueRepository: VenueRepository,
         @Inject(FILE_SERVICE_TOKEN)
         private readonly fileService: FileService,
+        private readonly translator: I18nService<I18nTranslations>,
     ) {}
 
     async execute(id: number, body: InputUpdateVenueDto): Promise<VenueEntity> {
@@ -34,7 +37,9 @@ export class UpdateVenue {
             if (!venue) {
                 if (body.image_url)
                     await this.fileService.remove(body.image_url);
-                throw new NotFoundException('Venue not found');
+                throw new NotFoundException(
+                    this.translator.t('venues.errors.not_found'),
+                );
             }
 
             if (body.name) {
@@ -51,7 +56,9 @@ export class UpdateVenue {
 
                 if (venueWithSameName) {
                     throw new ForbiddenException(
-                        'Venue with the same name already exists',
+                        this.translator.t(
+                            'venues.errors.already_exists.by_name',
+                        ),
                     );
                 }
             }
