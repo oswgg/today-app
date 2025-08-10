@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { OrganizerGuard } from './organizer-role.guard';
 import { UserRole } from 'src/domain/types/user-role.enum';
-import { ExpressRequestWithUser } from 'src/infrastructure/types/http/express.request-with-user';
 import { ConfigModule } from 'src/config/config.module';
+import { ExpressRequestWithUser } from 'src/infrastructure/http/types/express/express.request-with-user';
 
 describe('OrganizerGuard', () => {
     let guard: OrganizerGuard;

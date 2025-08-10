@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { IS_PUBLIC_KEY, Public } from './public.guard';
+import { IS_PUBLIC_KEY, Public } from './public.decorator';
 
 jest.mock('@nestjs/common', () => ({
     SetMetadata: jest.fn(),

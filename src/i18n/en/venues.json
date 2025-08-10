@@ -1,0 +1,10 @@
+{
+    "entity_name": "Venue",
+    "errors": {
+        "not_found": "Venue not found",
+        "already_exists": {
+            "by_location": "Venue with the same location already exists",
+            "by_name": "Venue with the same name already exists"
+        }
+    }
+}

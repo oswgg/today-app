@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from 'src/../generated/prisma';
 import {
     QueryOptions,
@@ -19,7 +19,7 @@ type PrismaFindManyArgs = {
 @Injectable()
 export class PrismaService<T, E extends object>
     extends PrismaClient
-    implements OnModuleInit, QueryBuilder<T>
+    implements OnModuleInit, OnModuleDestroy, QueryBuilder<T>
 {
     constructor() {
         super();
@@ -27,6 +27,10 @@ export class PrismaService<T, E extends object>
 
     async onModuleInit() {
         await this.$connect();
+    }
+
+    async onModuleDestroy() {
+        await this.$disconnect();
     }
 
     // Return type is Partial<E>, so only valid keys can be used
@@ -121,7 +125,7 @@ export class PrismaService<T, E extends object>
         return prismaQuery as E;
     }
 
-    protected buildInclude(include?: IncludeOptions): object | undefined {
+    private buildInclude(include?: IncludeOptions): object | undefined {
         if (!include) return undefined;
         return Object.fromEntries(
             include.map((relation) => [

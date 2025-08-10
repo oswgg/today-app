@@ -41,6 +41,7 @@ describe('ListAllEvents use case', () => {
                 end_time: new Date(),
                 lat: null,
                 lng: null,
+                venue_id: null,
                 location: 'Test Location',
                 created_at: new Date(),
             },

@@ -3,6 +3,7 @@
     "errors": {
         "general": "An error occurred",
         "not_found": "Resource not found",
+        "entity_not_found": "{entity} not found",
         "unauthorized": "Unauthorized access",
         "forbidden": "Forbidden access"
     },

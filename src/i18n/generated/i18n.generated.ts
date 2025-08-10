@@ -10,6 +10,7 @@ export type I18nTranslations = {
         "errors": {
             "general": string;
             "not_found": string;
+            "entity_not_found": string;
             "unauthorized": string;
             "forbidden": string;
         };
@@ -60,6 +61,16 @@ export type I18nTranslations = {
             "user_created": string;
             "user_updated": string;
             "user_deleted": string;
+        };
+    };
+    "venues": {
+        "entity_name": string;
+        "errors": {
+            "not_found": string;
+            "already_exists": {
+                "by_location": string;
+                "by_name": string;
+            };
         };
     };
 };
