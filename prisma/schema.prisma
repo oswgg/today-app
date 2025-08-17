@@ -48,9 +48,11 @@ model Event {
     location     String?   @db.VarChar
     lat          Float?    @db.DoublePrecision
     lng          Float?    @db.DoublePrecision
-    organizer_id BigInt
     created_at   DateTime  @default(now()) @db.Timestamptz(6)
+    image_url    String?   @db.VarChar
+
     venue_id     BigInt?
+    organizer_id BigInt
 
     categories EventCategories[]
     organizer  User              @relation(fields: [organizer_id], references: [id])
