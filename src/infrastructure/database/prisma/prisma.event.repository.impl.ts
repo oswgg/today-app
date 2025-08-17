@@ -5,6 +5,7 @@ import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
 import { Prisma } from 'generated/prisma';
 import { PrismaEventMapper } from 'src/infrastructure/mappers/prisma.event.mapper';
 import { PrismaService } from './prisma.service';
+import { CategoryEntity } from 'src/domain/entities/category.entity';
 
 export type EventRelations = keyof Prisma.EventInclude;
 export type EventQueryOptions = QueryOptions<EventEntity>;
@@ -64,5 +65,9 @@ export class PrismaEventsRepository
         );
 
         return _events.map(PrismaEventMapper.toEntity);
+    }
+
+    async listAvailableCategories(): Promise<CategoryEntity[]> {
+        return await this.category.findMany();
     }
 }
