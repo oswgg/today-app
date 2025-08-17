@@ -7,15 +7,20 @@ import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import { ZodCreateEvent } from 'src/infrastructure/http/validator/zod/events/zod.create-event.schema';
+import { CategoryEntity } from 'src/domain/entities/category.entity';
+import { ListAvailableCategories } from 'src/application/use-cases/events/list-available-categories.usecase';
+import { Public } from '../shared/decorators/public.decorator';
 
 @Controller('events')
 export class EventsController {
     constructor(
         private readonly listEvents: ListAllEvents,
         private readonly createEvent: CreateEvent,
+        private readonly listCategories: ListAvailableCategories,
     ) {}
 
     @Get('/')
+    @Public()
     async getAllEvents(
         @Query('lat', { transform: (v: string) => parseFloat(v) }) lat?: number,
         @Query('lng', { transform: (v: string) => parseFloat(v) }) lng?: number,
@@ -23,6 +28,12 @@ export class EventsController {
         radius?: number,
     ): Promise<EventEntity[]> {
         return await this.listEvents.execute(lat, lng, radius);
+    }
+
+    @Get('/categories')
+    @Public()
+    async getAllAvailableCategories(): Promise<CategoryEntity[]> {
+        return await this.listCategories.execute();
     }
 
     @UseGuards(OrganizerGuard)
