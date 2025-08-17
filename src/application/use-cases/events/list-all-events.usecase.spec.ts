@@ -44,6 +44,7 @@ describe('ListAllEvents use case', () => {
                 venue_id: null,
                 location: 'Test Location',
                 created_at: new Date(),
+                image_url: null,
             },
         ];
 

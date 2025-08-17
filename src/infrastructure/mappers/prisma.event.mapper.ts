@@ -29,6 +29,7 @@ export class PrismaEventMapper {
             lat: event.lat,
             lng: event.lng,
             created_at: event.created_at,
+            image_url: event.image_url,
             organizer: event.organizer
                 ? {
                       id: event.organizer.id,

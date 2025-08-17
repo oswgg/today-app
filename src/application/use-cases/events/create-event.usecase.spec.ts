@@ -54,6 +54,7 @@ describe('CreateEvent use case', () => {
             categories: [],
             location: 'Test Location',
             created_at: new Date(),
+            image_url: null,
         };
 
         mockEventRepository.create.mockResolvedValue(eventEntity);

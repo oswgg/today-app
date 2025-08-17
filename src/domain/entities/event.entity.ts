@@ -14,6 +14,7 @@ export interface EventEntity {
     lat: number | null;
     lng: number | null;
     created_at: Date;
+    image_url: string | null;
 
     organizer?: OrganizerEntity;
     categories?: CategoryEntity[];
