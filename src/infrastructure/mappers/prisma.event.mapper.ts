@@ -12,7 +12,7 @@ export class PrismaEventMapper {
     static toEntity(
         this: void,
         event: Event & {
-            organizer?: User;
+            creator?: User;
             categories?: EventCategories[] & { category: Category };
             venue?: Venue;
         },
@@ -23,21 +23,21 @@ export class PrismaEventMapper {
             description: event.description,
             start_time: event.start_time,
             end_time: event.end_time,
-            organizer_id: event.organizer_id,
+            creator_id: event.creator_id,
             venue_id: event.venue_id,
             location: event.location,
             lat: event.lat,
             lng: event.lng,
             created_at: event.created_at,
             image_url: event.image_url,
-            organizer: event.organizer
+            creator: event.creator
                 ? {
-                      id: event.organizer.id,
-                      name: event.organizer.name,
-                      email: event.organizer.email,
-                      role: event.organizer.role as UserRole.ORGANIZER,
-                      createdAt: event.organizer.created_at,
-                      uid: event.organizer.uid,
+                      id: event.creator.id,
+                      name: event.creator.name,
+                      email: event.creator.email,
+                      role: event.creator.role as UserRole,
+                      createdAt: event.creator.created_at,
+                      uid: event.creator.uid,
                   }
                 : undefined,
             categories: event.categories
@@ -60,8 +60,7 @@ export class PrismaEventMapper {
                       description: event.venue.description,
                       phone: event.venue.phone,
                       website: event.venue.website,
-                      image_url: event.venue.image_url,
-                      organizer_id: event.venue.organizer_id,
+                      creator_id: event.venue.creator_id,
                       created_at: event.venue.created_at,
                   }
                 : undefined,

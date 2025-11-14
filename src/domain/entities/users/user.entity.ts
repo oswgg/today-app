@@ -1,6 +1,6 @@
-import { UserRole } from '../types/user-role.enum';
+import { UserRole } from '../../types/user-role.enum';
 
-export interface UserEntity {
+export class UserEntity {
     id: number | bigint;
     email: string;
     name: string;

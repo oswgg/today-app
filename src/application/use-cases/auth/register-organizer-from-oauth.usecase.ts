@@ -1,5 +1,5 @@
 import { ForbiddenException, Inject } from '@nestjs/common';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
+import { OrganizerEntity } from 'src/domain/entities/users';
 import {
     USER_REPO_TOKEN,
     UserRepository,

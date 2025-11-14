@@ -1,6 +1,5 @@
 import { UserResponse } from '@supabase/supabase-js';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { OrganizerEntity, UserEntity } from 'src/domain/entities/users';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
 

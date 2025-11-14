@@ -1,11 +1,10 @@
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { UserEntity, OrganizerEntity } from 'src/domain/entities/users';
 import { UserRepository } from 'src/domain/repositories/user.repository';
 import {
     SupabaseUserMapper,
     SupabaseUserRow,
 } from '../mappers/supabase.user.mapper';
 import { SupabaseService } from './supabase.service';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { CreateUserDto } from 'src/application/dtos/user/create-user.dto';
 

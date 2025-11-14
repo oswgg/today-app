@@ -10,6 +10,8 @@ import { ZodCreateEvent } from 'src/infrastructure/http/validator/zod/events/zod
 import { CategoryEntity } from 'src/domain/entities/category.entity';
 import { ListAvailableCategories } from 'src/application/use-cases/events/list-available-categories.usecase';
 import { Public } from '../shared/decorators/public.decorator';
+import { User } from '../shared/decorators/user.decorator';
+import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
 
 @Controller('events')
 export class EventsController {
@@ -41,7 +43,11 @@ export class EventsController {
     async create(
         @Body(new ValidationPipe(new ZodValidator(ZodCreateEvent)))
         body: CreateEventDto,
+        @User() user: JwtUserPayload,
     ): Promise<EventEntity> {
-        return await this.createEvent.execute(body);
+        return await this.createEvent.execute({
+            ...body,
+            creator_id: user.id,
+        });
     }
 }

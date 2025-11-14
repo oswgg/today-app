@@ -56,7 +56,7 @@ export class VenuesController {
     ): Promise<OutputCreateVenueDto> {
         return await this.createVenue.execute({
             ...body,
-            organizer_id: user.id,
+            creator_id: user.id,
         });
     }
 
@@ -64,7 +64,7 @@ export class VenuesController {
     @UseGuards(OrganizerGuard, BelongingGuard)
     @BelongsTo({
         table: 'venues',
-        owner: 'organizer_id',
+        owner: 'creator_id',
         identify: 'id',
         entity: 'Venue',
     })
@@ -87,7 +87,7 @@ export class VenuesController {
     @UseGuards(OrganizerGuard, BelongingGuard)
     @BelongsTo({
         table: 'venues',
-        owner: 'organizer_id',
+        owner: 'creator_id',
         identify: 'id',
         message_path: 'venues.errors.not_found',
     })

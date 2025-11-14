@@ -18,7 +18,7 @@ export class CreateVenue {
         private readonly translator: I18nService<I18nTranslations>,
     ) {}
     async execute(
-        input: InputCreateVenueDto & { organizer_id: number | bigint },
+        input: InputCreateVenueDto & { creator_id: number | bigint },
     ): Promise<OutputCreateVenueDto> {
         const venuesAtSameLocation = await this.venueRepo.findByLocation(
             {
@@ -27,7 +27,7 @@ export class CreateVenue {
             },
             {
                 where: {
-                    organizer_id: input.organizer_id,
+                    creator_id: input.creator_id,
                 },
             },
         );
@@ -41,7 +41,7 @@ export class CreateVenue {
         const venueWithSameName = await this.venueRepo.findOne({
             where: {
                 name: input.name,
-                organizer_id: input.organizer_id,
+                creator_id: input.creator_id,
             },
         });
 

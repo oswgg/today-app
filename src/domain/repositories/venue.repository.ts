@@ -13,7 +13,7 @@ export interface VenueRepository {
     findOne(options?: VenueQueryOptions): Promise<VenueEntity | null>;
     findAll(options?: VenueQueryOptions): Promise<VenueEntity[]>;
     create(
-        venue: InputCreateVenueDto & { organizer_id: number | bigint },
+        venue: InputCreateVenueDto & { creator_id: number | bigint },
     ): Promise<VenueEntity>;
     updateById(
         id: number | bigint,

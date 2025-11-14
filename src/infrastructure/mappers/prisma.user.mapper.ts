@@ -1,7 +1,6 @@
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { UserEntity, OrganizerEntity } from 'src/domain/entities/users';
 import { User } from 'src/../generated/prisma';
 import { UserRole } from 'src/domain/types/user-role.enum';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 
 export class PrismaUserMapper {
     static toEntity(data: User): UserEntity {

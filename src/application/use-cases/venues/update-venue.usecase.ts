@@ -46,7 +46,7 @@ export class UpdateVenue {
                 const venueWithSameName = await this.venueRepository.findOne({
                     where: {
                         name: body.name,
-                        organizer_id: venue.organizer_id,
+                        creator_id: venue.creator_id,
                         id: {
                             operator: 'neq',
                             value: id,

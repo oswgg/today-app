@@ -72,7 +72,7 @@ export class PrismaVenueRepository
     }
 
     async create(
-        venue: InputCreateVenueDto & { organizer_id: number | bigint },
+        venue: InputCreateVenueDto & { creator_id: number | bigint },
     ): Promise<VenueEntity> {
         const _venue = await this.venue.create({
             data: {
@@ -84,8 +84,7 @@ export class PrismaVenueRepository
                 description: venue.description,
                 phone: venue.phone,
                 website: venue.website,
-                image_url: venue.image_url,
-                organizer_id: venue.organizer_id,
+                creator_id: venue.creator_id,
             },
         });
 
@@ -96,6 +95,7 @@ export class PrismaVenueRepository
         id: number | bigint,
         data: InputUpdateVenueDto,
     ): Promise<VenueEntity> {
+        console.log(data);
         const _venue = await this.venue.update({
             where: { id },
             data,
