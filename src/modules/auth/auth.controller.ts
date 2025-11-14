@@ -13,8 +13,7 @@ import { LoginWithOAuth } from 'src/application/use-cases/auth/login-with-oauth.
 import { LoginWithPassword } from 'src/application/use-cases/auth/login-with-password.usecase';
 import { RegisterOrganizerFromOAuth } from 'src/application/use-cases/auth/register-organizer-from-oauth.usecase';
 import { RegisterUserFromOAuth } from 'src/application/use-cases/auth/register-user-from-oauth.usecase';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { OrganizerEntity, UserEntity } from 'src/domain/entities/users';
 import { LoginResult } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { Public } from '../shared/decorators/public.decorator';

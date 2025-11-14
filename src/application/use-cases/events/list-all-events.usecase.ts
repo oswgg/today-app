@@ -46,7 +46,7 @@ export class ListAllEvents {
                 : undefined,
             include: [
                 {
-                    model: 'organizer',
+                    model: 'creator',
                     select: ['id', 'name'],
                 },
                 {

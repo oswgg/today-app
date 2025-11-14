@@ -1,4 +1,4 @@
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entities/users';
 import { UserRole } from '../types/user-role.enum';
 export interface UserFromOAuth
     extends Omit<Pick<UserEntity, 'name' | 'email' | 'uid'>, 'uid'> {

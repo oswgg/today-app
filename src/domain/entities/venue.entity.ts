@@ -1,5 +1,5 @@
 import { EventEntity } from './event.entity';
-import { OrganizerEntity } from './organizer.entity';
+import { UserEntity } from './users';
 
 export interface VenueEntity {
     id: number | bigint;
@@ -11,10 +11,9 @@ export interface VenueEntity {
     description: string | null;
     phone: string | null;
     website: string | null;
-    image_url: string | null;
-    organizer_id: number | bigint;
+    creator_id: number | bigint;
     created_at: Date;
 
-    organizer?: OrganizerEntity;
+    creator?: UserEntity;
     events?: EventEntity[];
 }

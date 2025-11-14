@@ -7,7 +7,7 @@ import {
     USER_REPO_TOKEN,
     UserRepository,
 } from 'src/domain/repositories/user.repository';
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { UserEntity } from 'src/domain/entities/users';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { I18nService } from 'nestjs-i18n';
 

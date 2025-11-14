@@ -15,7 +15,7 @@ export class ListVenues {
         return await this.venueRepository.findAll({
             include: [
                 {
-                    model: 'organizer',
+                    model: 'creator',
                 },
                 {
                     model: 'events',

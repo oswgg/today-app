@@ -6,7 +6,7 @@ import { PrismaEventMapper } from './prisma.event.mapper';
 export class PrismaVenueMapper {
     static toEntity(
         this: void,
-        data: Venue & { organizer?: User; events?: Event[] },
+        data: Venue & { creator?: User; events?: Event[] },
     ): VenueEntity {
         return {
             id: data.id,
@@ -18,11 +18,10 @@ export class PrismaVenueMapper {
             description: data.description,
             phone: data.phone,
             website: data.website,
-            image_url: data.image_url,
-            organizer_id: data.organizer_id,
+            creator_id: data.creator_id,
             created_at: new Date(data.created_at),
-            organizer: data.organizer
-                ? PrismaUserMapper.toOrganizerEntity(data.organizer)
+            creator: data.creator
+                ? PrismaUserMapper.toEntity(data.creator)
                 : undefined,
             events: data.events
                 ? data.events.map(PrismaEventMapper.toEntity)

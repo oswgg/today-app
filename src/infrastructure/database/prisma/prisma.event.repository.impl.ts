@@ -24,22 +24,24 @@ export class PrismaEventsRepository
             title,
             start_time,
             end_time,
-            organizer_id,
+            creator_id,
             lat,
             lng,
             location,
             categories,
+            venue_id,
         } = data;
 
         const _event = await this.event.create({
             data: {
                 title,
-                organizer_id,
+                creator_id,
                 start_time,
                 end_time,
                 location,
                 lat,
                 lng,
+                venue_id,
             },
         });
 

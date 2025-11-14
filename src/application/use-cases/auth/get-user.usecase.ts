@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { UserEntity } from 'src/domain/entities/users';
 import {
     USER_REPO_TOKEN,
     UserRepository,

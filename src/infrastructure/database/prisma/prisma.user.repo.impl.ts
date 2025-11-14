@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/domain/repositories/user.repository';
 import { PrismaService } from './prisma.service';
-import { UserEntity } from 'src/domain/entities/user.entity';
 import { PrismaUserMapper } from 'src/infrastructure/mappers/prisma.user.mapper';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { CreateUserDto } from 'src/application/dtos/user/create-user.dto';
 import { Prisma } from 'generated/prisma';
 import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
+import { UserEntity } from 'src/domain/entities/users/user.entity';
+import { OrganizerEntity } from 'src/domain/entities/users/organizer.entity';
 
 export type UserQueryOptions = QueryOptions<UserEntity>;
 
