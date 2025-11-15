@@ -15,55 +15,61 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
-    ApiGetAllVenues,
-    ApiCreateVenue,
-    ApiUpdateVenue,
-    ApiDeleteVenue,
-} from './venues.swagger';
+    ApiGetAllLocations,
+    ApiCreateLocation,
+    ApiUpdateLocation,
+    ApiDeleteLocation,
+} from './locations.swagger';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import {
-    InputCreateVenueDto,
-    OutputCreateVenueDto,
-} from 'src/application/dtos/venues/create-venue.dto';
-import { ZodCreateVenueSchema } from 'src/infrastructure/http/validator/zod/venues/zod.create-venue.schema';
+    InputCreateLocationDto,
+    OutputCreateLocationDto,
+} from 'src/application/dtos/locations/create-location.dto';
 import { User } from '../shared/decorators/user.decorator';
 import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
-import { CreateVenue } from 'src/application/use-cases/venues';
-import { ListVenues } from 'src/application/use-cases/venues/list-venues.usecase';
+import { CreateLocation } from 'src/application/use-cases/locations';
+import { ListLocations } from 'src/application/use-cases/locations/list-locations.usecase';
 import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
-import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
-import { ZodUpdateVenueSchema } from 'src/infrastructure/http/validator/zod/venues/zod.update-venue.schema';
+import { InputUpdateLocationDto } from 'src/application/dtos/locations/update-location.dto';
+import { ZodUpdateLocationSchema } from 'src/infrastructure/http/validator/zod/locations/zod.update-location.schema';
 import { BelongsTo } from '../shared/decorators/belongs.decorator';
 import { BelongingGuard } from '../shared/guards/belonging.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterConfigFactory } from 'src/config/multer.config';
-import { UpdateVenue } from 'src/application/use-cases/venues/update-venue.usecase';
-import { DeleteVenue } from 'src/application/use-cases/venues/delete-venue.usecase';
+import { UpdateLocation } from 'src/application/use-cases/locations/update-location.usecase';
+import { DeleteLocation } from 'src/application/use-cases/locations/delete-location.usecase';
+import { ZodCreateLocationSchema } from 'src/infrastructure/http/validator/zod/locations/zod.create-location.schema';
 
-@ApiTags('venues')
-@Controller('venues')
-export class VenuesController {
+@ApiTags('locations')
+@Controller('locations')
+export class LocationsController {
     constructor(
-        private readonly listVenues: ListVenues,
-        private readonly createVenue: CreateVenue,
-        private readonly updateVenue: UpdateVenue,
-        private readonly deleteVenue: DeleteVenue,
+        private readonly listVenues: ListLocations,
+        private readonly createVenue: CreateLocation,
+        private readonly updateVenue: UpdateLocation,
+        private readonly deleteVenue: DeleteLocation,
     ) {}
     @Get('/')
-    @ApiGetAllVenues()
+    @ApiGetAllLocations()
     async getAllVenues() {
         return await this.listVenues.execute();
     }
 
     @UseGuards(OrganizerGuard)
     @Post('/')
-    @ApiCreateVenue()
+    @ApiCreateLocation()
+    @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
     async create(
-        @Body(new ValidationPipe(new ZodValidator(ZodCreateVenueSchema)))
-        body: InputCreateVenueDto,
+        @Body(new ValidationPipe(new ZodValidator(ZodCreateLocationSchema)))
+        body: InputCreateLocationDto,
+        @UploadedFile() file: Express.Multer.File,
         @User() user: JwtUserPayload,
-    ): Promise<OutputCreateVenueDto> {
+    ): Promise<OutputCreateLocationDto> {
+        if (file) {
+            body.image_url = file.path;
+        }
+
         return await this.createVenue.execute({
             ...body,
             creator_id: user.id,
@@ -73,18 +79,18 @@ export class VenuesController {
     @Put('/:id')
     @UseGuards(OrganizerGuard, BelongingGuard)
     @BelongsTo({
-        table: 'venues',
+        table: 'locations',
         owner: 'creator_id',
         identify: 'id',
-        entity: 'Venue',
+        entity: 'Location',
     })
     @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
-    @ApiUpdateVenue()
+    @ApiUpdateLocation()
     async update(
         @UploadedFile() file: Express.Multer.File,
         @Param('id', ParseIntPipe) id: number,
-        @Body(new ValidationPipe(new ZodValidator(ZodUpdateVenueSchema)))
-        body: InputUpdateVenueDto,
+        @Body(new ValidationPipe(new ZodValidator(ZodUpdateLocationSchema)))
+        body: InputUpdateLocationDto,
     ) {
         if (file) {
             body.image_url = file.path;
@@ -97,12 +103,12 @@ export class VenuesController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @UseGuards(OrganizerGuard, BelongingGuard)
     @BelongsTo({
-        table: 'venues',
+        table: 'locations',
         owner: 'creator_id',
         identify: 'id',
-        message_path: 'venues.errors.not_found',
+        message_path: 'locations.errors.not_found',
     })
-    @ApiDeleteVenue()
+    @ApiDeleteLocation()
     async delete(@Param('id', ParseIntPipe) id: number) {
         return await this.deleteVenue.execute(id);
     }

@@ -24,7 +24,7 @@ export class CreateEventDto {
         description: 'Venue ID where the event will take place',
         example: 1,
     })
-    venue_id: number;
+    location_id: number;
 
     @ApiProperty({
         description:
@@ -44,7 +44,7 @@ export class CreateEventDto {
         description: 'Event location address',
         example: '123 Main St, City',
     })
-    location?: string;
+    locationAddress?: string;
 
     @ApiPropertyOptional({
         description: 'Latitude coordinate',

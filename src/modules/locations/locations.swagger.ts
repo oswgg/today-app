@@ -7,38 +7,38 @@ import {
     ApiBody,
 } from '@nestjs/swagger';
 import {
-    VenueResponseDto,
     ErrorResponseDto,
+    LocationResponseDto,
 } from 'src/application/dtos/shared/api-response.dto';
-import { InputCreateVenueDto } from 'src/application/dtos/venues/create-venue.dto';
-import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
-import { OutputCreateVenueDto } from 'src/application/dtos/venues/create-venue.dto';
+import { InputCreateLocationDto } from 'src/application/dtos/locations/create-location.dto';
+import { InputUpdateLocationDto } from 'src/application/dtos/locations/update-location.dto';
+import { OutputCreateLocationDto } from 'src/application/dtos/locations/create-location.dto';
 
-export const ApiGetAllVenues = () =>
+export const ApiGetAllLocations = () =>
     applyDecorators(
         ApiOperation({
-            summary: 'Get all venues',
-            description: 'List all venues',
+            summary: 'Get all locations',
+            description: 'List all locations',
         }),
         ApiResponse({
             status: 200,
-            description: 'List of venues',
-            type: [VenueResponseDto],
+            description: 'List of locations',
+            type: [LocationResponseDto],
         }),
     );
 
-export const ApiCreateVenue = () =>
+export const ApiCreateLocation = () =>
     applyDecorators(
         ApiBearerAuth('JWT-auth'),
         ApiOperation({
-            summary: 'Create venue',
-            description: 'Create a new venue (Organizer only)',
+            summary: 'Create location',
+            description: 'Create a new location (Organizer only)',
         }),
-        ApiBody({ type: InputCreateVenueDto }),
+        ApiBody({ type: InputCreateLocationDto }),
         ApiResponse({
             status: 201,
-            description: 'Venue created successfully',
-            type: OutputCreateVenueDto,
+            description: 'location created successfully',
+            type: OutputCreateLocationDto,
         }),
         ApiResponse({
             status: 401,
@@ -48,24 +48,24 @@ export const ApiCreateVenue = () =>
         ApiResponse({
             status: 403,
             description:
-                'Forbidden - Organizer role required or venue already exists',
+                'Forbidden - Organizer role required or location already exists',
             type: ErrorResponseDto,
         }),
     );
 
-export const ApiUpdateVenue = () =>
+export const ApiUpdateLocation = () =>
     applyDecorators(
         ApiBearerAuth('JWT-auth'),
         ApiOperation({
-            summary: 'Update venue',
-            description: 'Update an existing venue (Owner only)',
+            summary: 'Update location',
+            description: 'Update an existing location (Owner only)',
         }),
-        ApiParam({ name: 'id', type: Number, description: 'Venue ID' }),
-        ApiBody({ type: InputUpdateVenueDto }),
+        ApiParam({ name: 'id', type: Number, description: 'location ID' }),
+        ApiBody({ type: InputUpdateLocationDto }),
         ApiResponse({
             status: 200,
-            description: 'Venue updated successfully',
-            type: VenueResponseDto,
+            description: 'location updated successfully',
+            type: LocationResponseDto,
         }),
         ApiResponse({
             status: 401,
@@ -79,20 +79,23 @@ export const ApiUpdateVenue = () =>
         }),
         ApiResponse({
             status: 404,
-            description: 'Venue not found',
+            description: 'location not found',
             type: ErrorResponseDto,
         }),
     );
 
-export const ApiDeleteVenue = () =>
+export const ApiDeleteLocation = () =>
     applyDecorators(
         ApiBearerAuth('JWT-auth'),
         ApiOperation({
-            summary: 'Delete venue',
-            description: 'Delete a venue (Owner only)',
+            summary: 'Delete location',
+            description: 'Delete a location (Owner only)',
         }),
-        ApiParam({ name: 'id', type: Number, description: 'Venue ID' }),
-        ApiResponse({ status: 204, description: 'Venue deleted successfully' }),
+        ApiParam({ name: 'id', type: Number, description: 'location ID' }),
+        ApiResponse({
+            status: 204,
+            description: 'location deleted successfully',
+        }),
         ApiResponse({
             status: 401,
             description: 'Unauthorized',
@@ -105,7 +108,7 @@ export const ApiDeleteVenue = () =>
         }),
         ApiResponse({
             status: 404,
-            description: 'Venue not found',
+            description: 'location not found',
             type: ErrorResponseDto,
         }),
     );

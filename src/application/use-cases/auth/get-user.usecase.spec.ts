@@ -3,7 +3,7 @@ import {
     USER_REPO_TOKEN,
     UserRepository,
 } from 'src/domain/repositories/user.repository';
-import { UserEntity } from 'src/domain/entities/user.entity';
+import { UserEntity } from '../../../domain/entities/users/user.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { GetUser } from './get-user.usecase';
 import { ConfigModule } from 'src/config/config.module';

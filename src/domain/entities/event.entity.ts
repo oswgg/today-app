@@ -1,16 +1,16 @@
 import { CategoryEntity } from './category.entity';
 import { UserEntity } from './users';
-import { VenueEntity } from './venue.entity';
+import { LocationEntity } from './location.entity';
 
 export interface EventEntity {
     id: number | bigint;
     title: string;
     creator_id: number | bigint;
-    venue_id: number | bigint | null;
+    location_id: number | bigint | null;
     description: string | null;
     start_time: Date;
     end_time: Date | null;
-    location: string | null;
+    locationAddress: string | null;
     lat: number | null;
     lng: number | null;
     created_at: Date;
@@ -18,5 +18,5 @@ export interface EventEntity {
 
     creator?: UserEntity;
     categories?: CategoryEntity[];
-    venue?: VenueEntity;
+    locationEntity?: LocationEntity;
 }

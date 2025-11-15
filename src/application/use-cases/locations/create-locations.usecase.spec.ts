@@ -1,42 +1,62 @@
 import {
-    VENUE_REPO_TOKEN,
-    VenueRepository,
-} from 'src/domain/repositories/venue.repository';
-import { CreateVenue } from './create-venue.usecase';
+    LOCATION_REPO_TOKEN,
+    LocationRepository,
+} from 'src/domain/repositories/location.repository';
+import { CreateLocation } from './create-location.usecase';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InputCreateVenueDto } from 'src/application/dtos/venues/create-venue.dto';
-import { VenueEntity } from 'src/domain/entities/venue.entity';
+import { InputCreateLocationDto } from 'src/application/dtos/locations/create-location.dto';
+import { LocationEntity } from 'src/domain/entities/location.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from 'src/config/config.module';
+import {
+    FILE_SERVICE_TOKEN,
+    FileService,
+} from 'src/domain/services/files.service';
 
-describe('CreateVenue use case', () => {
-    let createVenueUseCase: jest.Mocked<CreateVenue>;
-    let mockVenueRepository: jest.Mocked<
-        Pick<VenueRepository, 'create' | 'findByLocation' | 'findOne'>
+describe('CreateLocation use case', () => {
+    let createVenueUseCase: jest.Mocked<CreateLocation>;
+    let mockLocationRepository: jest.Mocked<
+        Pick<LocationRepository, 'create' | 'findByLocation' | 'findOne'>
     >;
+    let mockFileService: jest.Mocked<FileService>;
 
     beforeEach(async () => {
-        mockVenueRepository = {
+        mockLocationRepository = {
             create: jest.fn(),
             findByLocation: jest.fn(),
             findOne: jest.fn(),
         };
 
-        mockVenueRepository.findByLocation.mockResolvedValue([]);
+        mockFileService = {
+            move: jest.fn(),
+            remove: jest.fn(),
+            generateUniqueName: jest.fn(),
+        };
+
+        mockLocationRepository.findByLocation.mockResolvedValue([]);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                CreateVenue,
-                { provide: VENUE_REPO_TOKEN, useValue: mockVenueRepository },
+                CreateLocation,
+                {
+                    provide: LOCATION_REPO_TOKEN,
+                    useValue: mockLocationRepository,
+                },
+                {
+                    provide: FILE_SERVICE_TOKEN,
+                    useValue: mockFileService,
+                },
             ],
             imports: [ConfigModule],
         }).compile();
 
-        createVenueUseCase = module.get(CreateVenue);
+        createVenueUseCase = module.get(CreateLocation);
     });
 
     it('should create a venue', async () => {
-        const input: InputCreateVenueDto & { organizer_id: number | bigint } = {
+        const input: InputCreateLocationDto & {
+            creator_id: number | bigint;
+        } = {
             name: 'Test Venue',
             address: 'Test Address',
             city: 'Test City',
@@ -45,11 +65,10 @@ describe('CreateVenue use case', () => {
             description: 'Test Description',
             phone: '1234567890',
             website: 'example.com',
-            image_url: 'https://example.com/image.jpg',
-            organizer_id: 1,
+            creator_id: 1,
         };
 
-        const venue: VenueEntity = {
+        const venue: LocationEntity = {
             id: 1,
             name: 'Test Venue',
             address: 'Test Address',
@@ -59,21 +78,23 @@ describe('CreateVenue use case', () => {
             description: 'Test Description',
             phone: '1234567890',
             website: 'example.com',
-            image_url: 'https://example.com/image.jpg',
-            organizer_id: 1,
+            creator_id: 1,
             created_at: new Date(),
+            image_url: null,
         };
 
-        mockVenueRepository.create.mockResolvedValue(venue);
+        mockLocationRepository.create.mockResolvedValue(venue);
 
         const output = await createVenueUseCase.execute(input);
 
-        expect(mockVenueRepository.create).toHaveBeenCalledWith(input);
+        expect(mockLocationRepository.create).toHaveBeenCalledWith(input);
         expect(output).toEqual(venue);
     });
 
     it('should throw a ForbiddenException if a venue already exists at the given location', async () => {
-        const input: InputCreateVenueDto & { organizer_id: number | bigint } = {
+        const input: InputCreateLocationDto & {
+            creator_id: number | bigint;
+        } = {
             name: 'Test Venue',
             address: 'Test Address',
             city: 'Test City',
@@ -82,11 +103,10 @@ describe('CreateVenue use case', () => {
             description: 'Test Description',
             phone: '1234567890',
             website: 'example.com',
-            image_url: 'https://example.com/image.jpg',
-            organizer_id: 1,
+            creator_id: 1,
         };
 
-        const existingVenue: VenueEntity = {
+        const existingVenue: LocationEntity = {
             id: 1,
             name: 'Test Venue',
             address: 'Test Address',
@@ -96,12 +116,14 @@ describe('CreateVenue use case', () => {
             description: 'Test Description',
             phone: '1234567890',
             website: 'example.com',
-            image_url: 'https://example.com/image.jpg',
-            organizer_id: 1,
+            creator_id: 1,
             created_at: new Date(),
+            image_url: null,
         };
 
-        mockVenueRepository.findByLocation.mockResolvedValue([existingVenue]);
+        mockLocationRepository.findByLocation.mockResolvedValue([
+            existingVenue,
+        ]);
 
         await expect(() => createVenueUseCase.execute(input)).rejects.toThrow(
             ForbiddenException,
@@ -109,7 +131,9 @@ describe('CreateVenue use case', () => {
     });
 
     it('should throw a ForbiddenException if a venue with the same name already exists for the given organizer', async () => {
-        const input: InputCreateVenueDto & { organizer_id: number | bigint } = {
+        const input: InputCreateLocationDto & {
+            creator_id: number | bigint;
+        } = {
             name: 'Test Venue',
             address: 'Test Address',
             city: 'Test City',
@@ -118,11 +142,10 @@ describe('CreateVenue use case', () => {
             description: 'Test Description',
             phone: '1234567890',
             website: 'example.com',
-            image_url: 'https://example.com/image.jpg',
-            organizer_id: 1,
+            creator_id: 1,
         };
 
-        const existingVenue: VenueEntity = {
+        const existingVenue: LocationEntity = {
             id: 1,
             name: 'Test Venue',
             address: 'Test Address',
@@ -132,12 +155,12 @@ describe('CreateVenue use case', () => {
             description: 'Test Description',
             phone: '1234567890',
             website: 'example.com',
-            image_url: 'https://example.com/image.jpg',
-            organizer_id: 1,
+            creator_id: 1,
             created_at: new Date(),
+            image_url: null,
         };
 
-        mockVenueRepository.findOne.mockResolvedValue(existingVenue);
+        mockLocationRepository.findOne.mockResolvedValue(existingVenue);
         await expect(() => createVenueUseCase.execute(input)).rejects.toThrow(
             ForbiddenException,
         );

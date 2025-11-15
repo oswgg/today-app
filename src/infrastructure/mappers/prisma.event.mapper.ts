@@ -3,7 +3,7 @@ import {
     Event,
     EventCategories,
     User,
-    Venue,
+    Location,
 } from 'generated/prisma';
 import { EventEntity } from 'src/domain/entities/event.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
@@ -14,7 +14,7 @@ export class PrismaEventMapper {
         event: Event & {
             creator?: User;
             categories?: EventCategories[] & { category: Category };
-            venue?: Venue;
+            Location?: Location;
         },
     ): EventEntity {
         return {
@@ -24,8 +24,8 @@ export class PrismaEventMapper {
             start_time: event.start_time,
             end_time: event.end_time,
             creator_id: event.creator_id,
-            venue_id: event.venue_id,
-            location: event.location,
+            location_id: event.location_id,
+            locationAddress: event.location,
             lat: event.lat,
             lng: event.lng,
             created_at: event.created_at,
@@ -49,19 +49,20 @@ export class PrismaEventMapper {
                       }),
                   )
                 : undefined,
-            venue: event.venue
+            locationEntity: event.Location
                 ? {
-                      id: event.venue.id,
-                      name: event.venue.name,
-                      address: event.venue.address,
-                      city: event.venue.city,
-                      lat: event.venue.lat,
-                      lng: event.venue.lng,
-                      description: event.venue.description,
-                      phone: event.venue.phone,
-                      website: event.venue.website,
-                      creator_id: event.venue.creator_id,
-                      created_at: event.venue.created_at,
+                      id: event.Location.id,
+                      name: event.Location.name,
+                      address: event.Location.address,
+                      city: event.Location.city,
+                      lat: event.Location.lat,
+                      lng: event.Location.lng,
+                      description: event.Location.description,
+                      phone: event.Location.phone,
+                      website: event.Location.website,
+                      image_url: event.Location.image_url,
+                      creator_id: event.Location.creator_id,
+                      created_at: event.Location.created_at,
                   }
                 : undefined,
         };

@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const ZodCreateEvent = z.strictObject({
     title: z.string().min(3).max(100),
     description: z.string().min(10).max(1000),
-    venue_id: z.number().int(),
+    location_id: z.number().int(),
     start_time: z.coerce.date(),
     end_time: z.optional(z.coerce.date()),
     location: z.string().optional(),

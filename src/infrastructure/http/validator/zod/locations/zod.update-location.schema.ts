@@ -1,7 +1,7 @@
-import { InputUpdateVenueDto } from 'src/application/dtos/venues/update-venue.dto';
+import { InputUpdateLocationDto } from 'src/application/dtos/locations/update-location.dto';
 import z from 'zod';
 
-export const ZodUpdateVenueSchema = z.object({
+export const ZodUpdateLocationSchema = z.object({
     name: z.string(),
     lat: z.coerce.number().optional(),
     lng: z.coerce.number().optional(),
@@ -10,4 +10,4 @@ export const ZodUpdateVenueSchema = z.object({
     capacity: z.number().optional(),
     image_url: z.string().optional(),
     image: z.string().optional(),
-}) as z.ZodType<InputUpdateVenueDto>;
+}) as z.ZodType<InputUpdateLocationDto>;

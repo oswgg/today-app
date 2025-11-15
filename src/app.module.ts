@@ -9,7 +9,7 @@ import { JWT_SERVICE_TOKEN } from './domain/services/jwt.service';
 import { NestJwtService } from './infrastructure/services/nest.jwt.service.impl';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './modules/shared/guards/auth.guard';
-import { VenuesModule } from './modules/venues/venues.module';
+import { LocationsModule } from './modules/locations/locations.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -34,7 +34,7 @@ import { join } from 'path';
         AuthModule,
         UserModule,
         EventsModule,
-        VenuesModule,
+        LocationsModule,
     ],
     controllers: [AppController],
 })

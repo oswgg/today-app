@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class InputCreateVenueDto {
+export class InputCreateLocationDto {
     @ApiProperty({
         description: 'Venue name',
         example: 'Central Park Amphitheater',
@@ -56,7 +56,7 @@ export class InputCreateVenueDto {
     image_url?: string;
 }
 
-export class OutputCreateVenueDto {
+export class OutputCreateLocationDto {
     @ApiProperty({
         description: 'Venue ID',
         example: 1,

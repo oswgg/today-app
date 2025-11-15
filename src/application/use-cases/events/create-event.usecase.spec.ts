@@ -2,6 +2,10 @@ import {
     EVENTS_REPOSITORY_TOKEN,
     EventsRepository,
 } from 'src/domain/repositories/events.repository';
+import {
+    LOCATION_REPO_TOKEN,
+    LocationRepository,
+} from 'src/domain/repositories/location.repository';
 import { CreateEvent } from './create-event.usecase';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
@@ -11,10 +15,16 @@ import { ConfigModule } from 'src/config/config.module';
 describe('CreateEvent use case', () => {
     let usecase: CreateEvent;
     let mockEventRepository: jest.Mocked<Pick<EventsRepository, 'create'>>;
+    let mockLocationRepository: jest.Mocked<
+        Pick<LocationRepository, 'findById'>
+    >;
 
     beforeEach(async () => {
         mockEventRepository = {
             create: jest.fn(),
+        };
+        mockLocationRepository = {
+            findById: jest.fn(),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +33,10 @@ describe('CreateEvent use case', () => {
                 {
                     provide: EVENTS_REPOSITORY_TOKEN,
                     useValue: mockEventRepository,
+                },
+                {
+                    provide: LOCATION_REPO_TOKEN,
+                    useValue: mockLocationRepository,
                 },
             ],
             imports: [ConfigModule],
@@ -35,10 +49,11 @@ describe('CreateEvent use case', () => {
         const data: CreateEventDto = {
             title: 'Test Event',
             description: 'This is a test event',
-            organizer_id: 1,
+            creator_id: 1,
             start_time: new Date(),
             end_time: new Date(),
-            location: 'Test Location',
+            locationAddress: 'Test Location',
+            location_id: 1,
         };
 
         const eventEntity: EventEntity = {
@@ -46,17 +61,31 @@ describe('CreateEvent use case', () => {
             title: 'Test Event',
             description: 'This is a test event',
             start_time: new Date(),
-            organizer_id: 1,
+            creator_id: 1,
             end_time: new Date(),
             lat: null,
             lng: null,
-            venue_id: null,
+            location_id: null,
             categories: [],
-            location: 'Test Location',
+            locationAddress: 'Test Location',
             created_at: new Date(),
             image_url: null,
         };
 
+        mockLocationRepository.findById.mockResolvedValue({
+            id: 1,
+            name: 'Test Location',
+            address: 'Test Address',
+            city: 'Test City',
+            lat: 0,
+            lng: 0,
+            description: null,
+            phone: null,
+            website: null,
+            creator_id: 1,
+            created_at: new Date(),
+            image_url: null,
+        });
         mockEventRepository.create.mockResolvedValue(eventEntity);
 
         const result = await usecase.execute(data);

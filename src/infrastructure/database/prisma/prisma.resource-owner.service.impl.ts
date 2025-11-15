@@ -4,7 +4,7 @@ import { PrismaService } from './prisma.service';
 const prismaTableToModelMapping: { [key: string]: string } = {
     users: 'user',
     events: 'event',
-    venues: 'venue',
+    locations: 'location',
     categories: 'category',
 };
 

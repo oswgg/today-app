@@ -89,18 +89,18 @@ export class EventResponseDto {
     creator_id: number;
 
     @ApiProperty({
-        description: 'Venue ID',
+        description: 'location ID',
         example: 1,
         nullable: true,
     })
-    venue_id: number | null;
+    location_id: number | null;
 
     @ApiProperty({
         description: 'Location address',
         example: '123 Main St',
         nullable: true,
     })
-    location: string | null;
+    locationAddress: string | null;
 
     @ApiProperty({
         description: 'Latitude',
@@ -145,12 +145,12 @@ export class CategoryResponseDto {
     description: string | null;
 }
 
-export class VenueResponseDto {
-    @ApiProperty({ description: 'Venue ID', example: 1 })
+export class LocationResponseDto {
+    @ApiProperty({ description: 'location ID', example: 1 })
     id: number;
 
     @ApiProperty({
-        description: 'Venue name',
+        description: 'location name',
         example: 'Central Park Amphitheater',
     })
     name: string;
@@ -169,7 +169,7 @@ export class VenueResponseDto {
 
     @ApiProperty({
         description: 'Description',
-        example: 'Beautiful outdoor venue',
+        example: 'Beautiful outdoor location',
         nullable: true,
     })
     description: string | null;

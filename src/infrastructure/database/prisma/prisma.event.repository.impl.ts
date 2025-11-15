@@ -27,9 +27,9 @@ export class PrismaEventsRepository
             creator_id,
             lat,
             lng,
-            location,
+            locationAddress,
             categories,
-            venue_id,
+            location_id,
         } = data;
 
         const _event = await this.event.create({
@@ -38,10 +38,10 @@ export class PrismaEventsRepository
                 creator_id,
                 start_time,
                 end_time,
-                location,
+                location: locationAddress,
                 lat,
                 lng,
-                venue_id,
+                location_id,
             },
         });
 
@@ -58,7 +58,8 @@ export class PrismaEventsRepository
     }
 
     async findById(id: number): Promise<EventEntity | null> {
-        return await this.event.findUnique({ where: { id } });
+        const event = await this.event.findUnique({ where: { id } });
+        return event ? PrismaEventMapper.toEntity(event) : null;
     }
 
     async findAll(queryOptions?: EventQueryOptions): Promise<EventEntity[]> {
