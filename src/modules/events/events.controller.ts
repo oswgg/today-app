@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
     ApiGetAllEvents,
@@ -9,7 +17,6 @@ import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { CreateEvent } from 'src/application/use-cases/events/create-event.usecase';
 import { ListAllEvents } from 'src/application/use-cases/events/list-all-events.usecase';
 import { type EventEntity } from 'src/domain/entities/event.entity';
-import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import { ZodCreateEvent } from 'src/infrastructure/http/validator/zod/events/zod.create-event.schema';
@@ -18,6 +25,9 @@ import { ListAvailableCategories } from 'src/application/use-cases/events/list-a
 import { Public } from '../shared/decorators/public.decorator';
 import { User } from '../shared/decorators/user.decorator';
 import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
+import { UserRoleGuard } from '../shared/guards/user-role.guard';
+import { RequiredRole } from '../shared/decorators/required-user-role.decorator';
+import { UserRole } from 'src/domain/types/user-role.enum';
 
 @ApiTags('events')
 @Controller('events')
@@ -47,7 +57,8 @@ export class EventsController {
         return await this.listCategories.execute();
     }
 
-    @UseGuards(OrganizerGuard)
+    @UseGuards(UserRoleGuard)
+    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
     @Post('/')
     @ApiCreateEvent()
     async create(

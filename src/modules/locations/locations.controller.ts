@@ -30,7 +30,6 @@ import { User } from '../shared/decorators/user.decorator';
 import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
 import { CreateLocation } from 'src/application/use-cases/locations';
 import { ListLocations } from 'src/application/use-cases/locations/list-locations.usecase';
-import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
 import { InputUpdateLocationDto } from 'src/application/dtos/locations/update-location.dto';
 import { ZodUpdateLocationSchema } from 'src/infrastructure/http/validator/zod/locations/zod.update-location.schema';
 import { BelongsTo } from '../shared/decorators/belongs.decorator';
@@ -40,6 +39,9 @@ import { MulterConfigFactory } from 'src/config/multer.config';
 import { UpdateLocation } from 'src/application/use-cases/locations/update-location.usecase';
 import { DeleteLocation } from 'src/application/use-cases/locations/delete-location.usecase';
 import { ZodCreateLocationSchema } from 'src/infrastructure/http/validator/zod/locations/zod.create-location.schema';
+import { UserRoleGuard } from '../shared/guards/user-role.guard';
+import { RequiredRole } from '../shared/decorators/required-user-role.decorator';
+import { UserRole } from 'src/domain/types/user-role.enum';
 
 @ApiTags('locations')
 @Controller('locations')
@@ -56,9 +58,10 @@ export class LocationsController {
         return await this.listVenues.execute();
     }
 
-    @UseGuards(OrganizerGuard)
     @Post('/')
     @ApiCreateLocation()
+    @UseGuards(UserRoleGuard)
+    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
     @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
     async create(
         @Body(new ValidationPipe(new ZodValidator(ZodCreateLocationSchema)))
@@ -77,7 +80,8 @@ export class LocationsController {
     }
 
     @Put('/:id')
-    @UseGuards(OrganizerGuard, BelongingGuard)
+    @UseGuards(UserRoleGuard, BelongingGuard)
+    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
     @BelongsTo({
         table: 'locations',
         owner: 'creator_id',
@@ -101,7 +105,8 @@ export class LocationsController {
 
     @Delete('/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(OrganizerGuard, BelongingGuard)
+    @UseGuards(UserRoleGuard, BelongingGuard)
+    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
     @BelongsTo({
         table: 'locations',
         owner: 'creator_id',
