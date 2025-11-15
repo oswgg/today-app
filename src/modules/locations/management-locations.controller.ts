@@ -43,7 +43,7 @@ import { UserRoleGuard } from '../shared/guards/user-role.guard';
 import { RequiredRole } from '../shared/decorators/required-user-role.decorator';
 import { UserRole } from 'src/domain/types/user-role.enum';
 
-@ApiTags('Management (Locations)')
+@ApiTags('Locations (Management)')
 @ApiBearerAuth('JWT-auth')
 @Controller('locations/management')
 @UseGuards(UserRoleGuard)

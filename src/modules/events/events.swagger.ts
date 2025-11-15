@@ -5,6 +5,7 @@ import {
     ApiQuery,
     ApiBearerAuth,
     ApiBody,
+    ApiParam,
 } from '@nestjs/swagger';
 import {
     EventResponseDto,
@@ -18,7 +19,7 @@ export const ApiGetAllEvents = () =>
         ApiOperation({
             summary: 'Get all events',
             description:
-                'List all events with optional location-based filtering',
+                'List all public events with optional location-based filtering',
         }),
         ApiQuery({
             name: 'lat',
@@ -58,12 +59,31 @@ export const ApiGetAllCategories = () =>
         }),
     );
 
+export const ApiGetEventById = () =>
+    applyDecorators(
+        ApiOperation({
+            summary: 'Get event by ID',
+            description: 'Get detailed information about a specific event',
+        }),
+        ApiParam({ name: 'id', type: Number, description: 'Event ID' }),
+        ApiResponse({
+            status: 200,
+            description: 'Event details',
+            type: EventResponseDto,
+        }),
+        ApiResponse({
+            status: 404,
+            description: 'Event not found',
+            type: ErrorResponseDto,
+        }),
+    );
+
 export const ApiCreateEvent = () =>
     applyDecorators(
         ApiBearerAuth('JWT-auth'),
         ApiOperation({
             summary: 'Create event',
-            description: 'Create a new event (Organizer only)',
+            description: 'Create a new event (Organizer/Institution only)',
         }),
         ApiBody({ type: CreateEventDto }),
         ApiResponse({
@@ -78,7 +98,7 @@ export const ApiCreateEvent = () =>
         }),
         ApiResponse({
             status: 403,
-            description: 'Forbidden - Organizer role required',
+            description: 'Forbidden - Organizer/Institution role required',
             type: ErrorResponseDto,
         }),
     );

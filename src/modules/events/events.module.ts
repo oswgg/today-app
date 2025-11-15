@@ -3,10 +3,11 @@ import {
     EventsServicesProvider,
     EventsUseCaseProviders,
 } from './events.providers';
-import { EventsController } from './events.controller';
+import { PublicEventsController } from './public-events.controller';
+import { ManagementEventsController } from './management-events.controller';
 
 @Module({
     providers: [...EventsServicesProvider, ...EventsUseCaseProviders],
-    controllers: [EventsController],
+    controllers: [ManagementEventsController, PublicEventsController],
 })
 export class EventsModule {}
