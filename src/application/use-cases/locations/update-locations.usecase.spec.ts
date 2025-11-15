@@ -1,8 +1,8 @@
 import {
-    VENUE_REPO_TOKEN,
-    VenueRepository,
-} from 'src/domain/repositories/venue.repository';
-import { UpdateVenue } from './update-venue.usecase';
+    LOCATION_REPO_TOKEN,
+    LocationRepository,
+} from 'src/domain/repositories/location.repository';
+import { UpdateLocation } from './update-location.usecase';
 import {
     FILE_SERVICE_TOKEN,
     FileService,
@@ -11,16 +11,16 @@ import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { Test } from '@nestjs/testing';
 
-describe('UpdateVenue use case', () => {
-    let updateVenue: UpdateVenue;
-    let mockVenueRepository: jest.Mocked<
-        Pick<VenueRepository, 'findById' | 'updateById' | 'findOne'>
+describe('UpdateLocation use case', () => {
+    let updateVenue: UpdateLocation;
+    let mockLocationRepository: jest.Mocked<
+        Pick<LocationRepository, 'findById' | 'updateById' | 'findOne'>
     >;
     let mockFileService: jest.Mocked<Pick<FileService, 'move' | 'remove'>>;
     let mockTranslator: jest.Mocked<Pick<I18nService<I18nTranslations>, 't'>>;
 
     beforeEach(async () => {
-        mockVenueRepository = {
+        mockLocationRepository = {
             findOne: jest.fn(),
             findById: jest.fn(),
             updateById: jest.fn(),
@@ -35,14 +35,17 @@ describe('UpdateVenue use case', () => {
 
         const module = await Test.createTestingModule({
             providers: [
-                UpdateVenue,
-                { provide: VENUE_REPO_TOKEN, useValue: mockVenueRepository },
+                UpdateLocation,
+                {
+                    provide: LOCATION_REPO_TOKEN,
+                    useValue: mockLocationRepository,
+                },
                 { provide: FILE_SERVICE_TOKEN, useValue: mockFileService },
                 { provide: I18nService, useValue: mockTranslator },
             ],
         }).compile();
 
-        updateVenue = module.get<UpdateVenue>(UpdateVenue);
+        updateVenue = module.get<UpdateLocation>(UpdateLocation);
     });
 
     it('should update a venue', async () => {
@@ -56,16 +59,16 @@ describe('UpdateVenue use case', () => {
             lng: 0,
             description: 'Old Description',
             phone: 'Old Phone',
-            organizer_id: 1,
+            creator_id: 1,
             website: 'old-website.com',
-            image_url: 'old-image.jpg',
             created_at: new Date(),
+            image_url: null,
         };
-        const body = { name: 'New Name', image_url: 'new-image.jpg' };
+        const body = { name: 'New Name' };
         const expectedUpdatedVenue = { ...initialValues, ...body };
 
-        mockVenueRepository.findOne.mockResolvedValue(null);
-        mockVenueRepository.findById.mockResolvedValue({
+        mockLocationRepository.findOne.mockResolvedValue(null);
+        mockLocationRepository.findById.mockResolvedValue({
             id,
             name: 'Old Name',
             address: 'Old Address',
@@ -74,12 +77,14 @@ describe('UpdateVenue use case', () => {
             lng: 0,
             description: 'Old Description',
             phone: 'Old Phone',
-            organizer_id: 1,
+            creator_id: 1,
             website: 'old-website.com',
-            image_url: 'old-image.jpg',
             created_at: new Date(),
+            image_url: null,
         });
-        mockVenueRepository.updateById.mockResolvedValue(expectedUpdatedVenue);
+        mockLocationRepository.updateById.mockResolvedValue(
+            expectedUpdatedVenue,
+        );
 
         const updatedVenue = await updateVenue.execute(id, body);
 

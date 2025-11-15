@@ -27,12 +27,12 @@ async function bootstrap() {
     const config = new DocumentBuilder()
         .setTitle('Today App API')
         .setDescription(
-            'API documentation for Today App - Event and Venue Management',
+            'API documentation for Today App - Event and Location Management',
         )
         .setVersion('1.0')
         .addTag('auth', 'Authentication endpoints')
         .addTag('events', 'Event management endpoints')
-        .addTag('venues', 'Venue management endpoints')
+        .addTag('locations', 'Location management endpoints')
         .addTag('user', 'User management endpoints')
         .addBearerAuth(
             {

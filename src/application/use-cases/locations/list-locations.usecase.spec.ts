@@ -1,37 +1,39 @@
 import {
-    VENUE_REPO_TOKEN,
-    VenueRepository,
-} from 'src/domain/repositories/venue.repository';
-import { ListVenues } from './list-venues.usecase';
+    LOCATION_REPO_TOKEN,
+    LocationRepository,
+} from 'src/domain/repositories/location.repository';
+import { ListLocations } from './list-locations.usecase';
 import { Test } from '@nestjs/testing';
 import { ConfigModule } from 'src/config/config.module';
-import { VenueEntity } from 'src/domain/entities/venue.entity';
+import { LocationEntity } from 'src/domain/entities/location.entity';
 
-describe('ListVenues use case', () => {
-    let listVenues: ListVenues;
-    let mockVenueRepository: jest.Mocked<Pick<VenueRepository, 'findAll'>>;
+describe('ListLocations use case', () => {
+    let listVenues: ListLocations;
+    let mockLocationRepository: jest.Mocked<
+        Pick<LocationRepository, 'findAll'>
+    >;
 
     beforeEach(async () => {
-        mockVenueRepository = {
+        mockLocationRepository = {
             findAll: jest.fn(),
         };
 
         const module = await Test.createTestingModule({
             providers: [
-                ListVenues,
+                ListLocations,
                 {
-                    provide: VENUE_REPO_TOKEN,
-                    useValue: mockVenueRepository,
+                    provide: LOCATION_REPO_TOKEN,
+                    useValue: mockLocationRepository,
                 },
             ],
             imports: [ConfigModule],
         }).compile();
 
-        listVenues = module.get<ListVenues>(ListVenues);
+        listVenues = module.get<ListLocations>(ListLocations);
     });
 
     it('should return all venues', async () => {
-        const venues: VenueEntity[] = [
+        const venues: LocationEntity[] = [
             {
                 id: 1,
                 name: 'Venue 1',
@@ -40,11 +42,11 @@ describe('ListVenues use case', () => {
                 lat: 1,
                 lng: 1,
                 description: 'Description 1',
-                organizer_id: 1,
+                creator_id: 1,
                 phone: '123456789',
                 website: 'https://www.venue1.com',
-                image_url: 'https://www.venue1.com/image.jpg',
                 created_at: new Date(),
+                image_url: null,
             },
             {
                 id: 2,
@@ -54,14 +56,14 @@ describe('ListVenues use case', () => {
                 lat: 2,
                 lng: 2,
                 description: 'Description 2',
-                organizer_id: 2,
+                creator_id: 2,
                 phone: '987654321',
                 website: 'https://www.venue2.com',
-                image_url: 'https://www.venue2.com/image.jpg',
                 created_at: new Date(),
+                image_url: null,
             },
         ];
-        mockVenueRepository.findAll.mockResolvedValue(venues);
+        mockLocationRepository.findAll.mockResolvedValue(venues);
 
         const result = await listVenues.execute();
 

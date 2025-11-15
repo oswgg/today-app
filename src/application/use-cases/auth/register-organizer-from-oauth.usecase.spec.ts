@@ -8,7 +8,7 @@ import {
     AuthService,
 } from 'src/domain/services/auth.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrganizerEntity } from 'src/domain/entities/organizer.entity';
+import { OrganizerEntity } from '../../../domain/entities/users/organizer.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { ConfigModule } from 'src/config/config.module';
 

@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { InputCreateVenueDto } from './create-venue.dto';
+import { InputCreateLocationDto } from './create-location.dto';
 
-export class InputUpdateVenueDto
-    implements Partial<Omit<InputCreateVenueDto, 'lat' | 'lng'>>
+export class InputUpdateLocationDto
+    implements Partial<Omit<InputCreateLocationDto, 'lat' | 'lng'>>
 {
     @ApiPropertyOptional({
         description: 'Venue name',
@@ -47,7 +47,7 @@ export class InputUpdateVenueDto
     image_url?: string;
 }
 
-export class OutputUpdateVenueDto {
+export class OutputUpdateLocationDto {
     @ApiProperty({
         description: 'Venue ID',
         example: 1,
