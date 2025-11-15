@@ -1,8 +1,14 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import {
+    ApiGetAllEvents,
+    ApiGetAllCategories,
+    ApiCreateEvent,
+} from './events.swagger';
 import { CreateEventDto } from 'src/application/dtos/events/create-event.dto';
 import { CreateEvent } from 'src/application/use-cases/events/create-event.usecase';
 import { ListAllEvents } from 'src/application/use-cases/events/list-all-events.usecase';
-import { EventEntity } from 'src/domain/entities/event.entity';
+import { type EventEntity } from 'src/domain/entities/event.entity';
 import { OrganizerGuard } from '../shared/guards/organizer-role.guard';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
@@ -13,6 +19,7 @@ import { Public } from '../shared/decorators/public.decorator';
 import { User } from '../shared/decorators/user.decorator';
 import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
 
+@ApiTags('events')
 @Controller('events')
 export class EventsController {
     constructor(
@@ -23,6 +30,7 @@ export class EventsController {
 
     @Get('/')
     @Public()
+    @ApiGetAllEvents()
     async getAllEvents(
         @Query('lat', { transform: (v: string) => parseFloat(v) }) lat?: number,
         @Query('lng', { transform: (v: string) => parseFloat(v) }) lng?: number,
@@ -34,12 +42,14 @@ export class EventsController {
 
     @Get('/categories')
     @Public()
+    @ApiGetAllCategories()
     async getAllAvailableCategories(): Promise<CategoryEntity[]> {
         return await this.listCategories.execute();
     }
 
     @UseGuards(OrganizerGuard)
     @Post('/')
+    @ApiCreateEvent()
     async create(
         @Body(new ValidationPipe(new ZodValidator(ZodCreateEvent)))
         body: CreateEventDto,

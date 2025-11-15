@@ -1,4 +1,15 @@
-export interface LoginWithPasswordDto {
+import { ApiProperty } from '@nestjs/swagger';
+
+export class LoginWithPasswordDto {
+    @ApiProperty({
+        description: 'User email address',
+        example: 'user@example.com',
+    })
     email: string;
+
+    @ApiProperty({
+        description: 'User password',
+        example: 'password123',
+    })
     password: string;
 }

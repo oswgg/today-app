@@ -6,7 +6,13 @@ import {
     Post,
     Res,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
+import {
+    ApiRegisterWithOAuth,
+    ApiLoginWithPassword,
+    ApiLoginWithOAuth,
+} from './auth.swagger';
 import { LoginWithPasswordDto } from 'src/application/dtos/auth/login-with-password.dto';
 import { GetGoogleOAuthURL } from 'src/application/use-cases/auth/get-google-oauth-url.usecase';
 import { LoginWithOAuth } from 'src/application/use-cases/auth/login-with-oauth.usecase';
@@ -27,6 +33,7 @@ import { RegisterWithOAuthDto } from 'src/application/dtos/auth/register-with-oa
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
+@ApiTags('auth')
 @Public()
 @Controller('auth')
 export class AuthController {
@@ -40,11 +47,17 @@ export class AuthController {
     ) {}
 
     @Get('oauth/google')
+    @ApiOperation({
+        summary: 'Get Google OAuth URL',
+        description: 'Redirects to Google OAuth URL for authentication',
+    })
+    @ApiResponse({ status: 302, description: 'Redirects to Google OAuth' })
     async googleOAuth(@Res() res: Response): Promise<void> {
         return res.redirect(await this.getGoogleOAuthURL.execute());
     }
 
     @Post('register/oauth')
+    @ApiRegisterWithOAuth()
     OAuthRegister(
         @Body(new ValidationPipe(new ZodValidator(ZodRegisterWithOAuth)))
         body: RegisterWithOAuthDto,
@@ -79,6 +92,7 @@ export class AuthController {
     }
 
     @Post('login')
+    @ApiLoginWithPassword()
     async LoginWithPassword(
         @Body(new ValidationPipe(new ZodValidator(ZodLoginWithPassword)))
         body: LoginWithPasswordDto,
@@ -87,6 +101,7 @@ export class AuthController {
     }
 
     @Post('login/oauth')
+    @ApiLoginWithOAuth()
     OAuthLogin(
         @Body(new ValidationPipe(new ZodValidator(ZodLoginWitOAuth)))
         body: LoginWitOAuthDto,

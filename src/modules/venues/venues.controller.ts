@@ -13,6 +13,13 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import {
+    ApiGetAllVenues,
+    ApiCreateVenue,
+    ApiUpdateVenue,
+    ApiDeleteVenue,
+} from './venues.swagger';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import {
@@ -34,6 +41,7 @@ import { MulterConfigFactory } from 'src/config/multer.config';
 import { UpdateVenue } from 'src/application/use-cases/venues/update-venue.usecase';
 import { DeleteVenue } from 'src/application/use-cases/venues/delete-venue.usecase';
 
+@ApiTags('venues')
 @Controller('venues')
 export class VenuesController {
     constructor(
@@ -43,12 +51,14 @@ export class VenuesController {
         private readonly deleteVenue: DeleteVenue,
     ) {}
     @Get('/')
+    @ApiGetAllVenues()
     async getAllVenues() {
         return await this.listVenues.execute();
     }
 
     @UseGuards(OrganizerGuard)
     @Post('/')
+    @ApiCreateVenue()
     async create(
         @Body(new ValidationPipe(new ZodValidator(ZodCreateVenueSchema)))
         body: InputCreateVenueDto,
@@ -69,6 +79,7 @@ export class VenuesController {
         entity: 'Venue',
     })
     @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
+    @ApiUpdateVenue()
     async update(
         @UploadedFile() file: Express.Multer.File,
         @Param('id', ParseIntPipe) id: number,
@@ -91,6 +102,7 @@ export class VenuesController {
         identify: 'id',
         message_path: 'venues.errors.not_found',
     })
+    @ApiDeleteVenue()
     async delete(@Param('id', ParseIntPipe) id: number) {
         return await this.deleteVenue.execute(id);
     }
