@@ -27,6 +27,8 @@ export type I18nTranslations = {
             "user_not_found": string;
             "invalid_credentials": string;
             "organizer_role_required": string;
+            "institution_role_required": string;
+            "inssufficient_user_role": string;
         };
         "success": {
             "login_success": string;
