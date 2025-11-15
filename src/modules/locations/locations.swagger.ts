@@ -18,7 +18,7 @@ export const ApiGetAllLocations = () =>
     applyDecorators(
         ApiOperation({
             summary: 'Get all locations',
-            description: 'List all locations',
+            description: 'List all public locations',
         }),
         ApiResponse({
             status: 200,
@@ -27,12 +27,56 @@ export const ApiGetAllLocations = () =>
         }),
     );
 
+export const ApiGetLocationById = () =>
+    applyDecorators(
+        ApiOperation({
+            summary: 'Get location by ID',
+            description: 'Get detailed information about a specific location',
+        }),
+        ApiParam({ name: 'id', type: Number, description: 'Location ID' }),
+        ApiResponse({
+            status: 200,
+            description: 'Location details',
+            type: LocationResponseDto,
+        }),
+        ApiResponse({
+            status: 404,
+            description: 'Location not found',
+            type: ErrorResponseDto,
+        }),
+    );
+
+export const ApiGetMyLocations = () =>
+    applyDecorators(
+        ApiBearerAuth('JWT-auth'),
+        ApiOperation({
+            summary: 'Get my locations',
+            description:
+                'List all locations owned by the authenticated organizer/institution',
+        }),
+        ApiResponse({
+            status: 200,
+            description: 'List of owned locations',
+            type: [LocationResponseDto],
+        }),
+        ApiResponse({
+            status: 401,
+            description: 'Unauthorized',
+            type: ErrorResponseDto,
+        }),
+        ApiResponse({
+            status: 403,
+            description: 'Forbidden - Organizer or Institution role required',
+            type: ErrorResponseDto,
+        }),
+    );
+
 export const ApiCreateLocation = () =>
     applyDecorators(
         ApiBearerAuth('JWT-auth'),
         ApiOperation({
             summary: 'Create location',
-            description: 'Create a new location (Organizer only)',
+            description: 'Create a new location (Organizer/Institution only)',
         }),
         ApiBody({ type: InputCreateLocationDto }),
         ApiResponse({
@@ -48,7 +92,7 @@ export const ApiCreateLocation = () =>
         ApiResponse({
             status: 403,
             description:
-                'Forbidden - Organizer role required or location already exists',
+                'Forbidden - Organizer/Institution role required or location already exists',
             type: ErrorResponseDto,
         }),
     );

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { LocationsController } from './locations.controller';
+import { PublicLocationsController } from './public-locations.controller';
+import { ManagementLocationsController } from './management-locations.controller';
 import {
     VenuesServicesProviders,
     VenuesUseCasesProviders,
@@ -7,6 +8,6 @@ import {
 
 @Module({
     providers: [...VenuesServicesProviders, ...VenuesUseCasesProviders],
-    controllers: [LocationsController],
+    controllers: [ManagementLocationsController, PublicLocationsController],
 })
 export class LocationsModule {}

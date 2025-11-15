@@ -13,9 +13,9 @@ import {
     UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import {
-    ApiGetAllLocations,
+    ApiGetMyLocations,
     ApiCreateLocation,
     ApiUpdateLocation,
     ApiDeleteLocation,
@@ -43,25 +43,27 @@ import { UserRoleGuard } from '../shared/guards/user-role.guard';
 import { RequiredRole } from '../shared/decorators/required-user-role.decorator';
 import { UserRole } from 'src/domain/types/user-role.enum';
 
-@ApiTags('locations')
-@Controller('locations')
-export class LocationsController {
+@ApiTags('Management (Locations)')
+@ApiBearerAuth('JWT-auth')
+@Controller('locations/management')
+@UseGuards(UserRoleGuard)
+@RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
+export class ManagementLocationsController {
     constructor(
-        private readonly listVenues: ListLocations,
-        private readonly createVenue: CreateLocation,
-        private readonly updateVenue: UpdateLocation,
-        private readonly deleteVenue: DeleteLocation,
+        private readonly listLocations: ListLocations,
+        private readonly createLocation: CreateLocation,
+        private readonly updateLocation: UpdateLocation,
+        private readonly deleteLocation: DeleteLocation,
     ) {}
+
     @Get('/')
-    @ApiGetAllLocations()
-    async getAllVenues() {
-        return await this.listVenues.execute();
+    @ApiGetMyLocations()
+    async getMyLocations(@User() user: JwtUserPayload) {
+        return await this.listLocations.execute({ creator_id: user.id });
     }
 
     @Post('/')
     @ApiCreateLocation()
-    @UseGuards(UserRoleGuard)
-    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
     @UseInterceptors(FileInterceptor('image', MulterConfigFactory.images))
     async create(
         @Body(new ValidationPipe(new ZodValidator(ZodCreateLocationSchema)))
@@ -73,15 +75,14 @@ export class LocationsController {
             body.image_url = file.path;
         }
 
-        return await this.createVenue.execute({
+        return await this.createLocation.execute({
             ...body,
             creator_id: user.id,
         });
     }
 
     @Put('/:id')
-    @UseGuards(UserRoleGuard, BelongingGuard)
-    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
+    @UseGuards(BelongingGuard)
     @BelongsTo({
         table: 'locations',
         owner: 'creator_id',
@@ -100,13 +101,12 @@ export class LocationsController {
             body.image_url = file.path;
         }
 
-        return await this.updateVenue.execute(id, body);
+        return await this.updateLocation.execute(id, body);
     }
 
     @Delete('/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(UserRoleGuard, BelongingGuard)
-    @RequiredRole([UserRole.ORGANIZER, UserRole.INSTITUTION])
+    @UseGuards(BelongingGuard)
     @BelongsTo({
         table: 'locations',
         owner: 'creator_id',
@@ -115,6 +115,6 @@ export class LocationsController {
     })
     @ApiDeleteLocation()
     async delete(@Param('id', ParseIntPipe) id: number) {
-        return await this.deleteVenue.execute(id);
+        return await this.deleteLocation.execute(id);
     }
 }

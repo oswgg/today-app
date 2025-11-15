@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { CreateLocation } from 'src/application/use-cases/locations/create-location.usecase';
 import { ListLocations } from 'src/application/use-cases/locations/list-locations.usecase';
+import { GetLocationById } from 'src/application/use-cases/locations/get-location-by-id.usecase';
 import { LOCATION_REPO_TOKEN } from 'src/domain/repositories/location.repository';
 import { PrismaLocationRepository } from 'src/infrastructure/database/prisma/prisma.location.repository.impl';
 import { BelongingGuard } from '../shared/guards/belonging.guard';
@@ -30,6 +31,7 @@ export const VenuesServicesProviders: Provider[] = [
 ];
 export const VenuesUseCasesProviders: Provider[] = [
     ListLocations,
+    GetLocationById,
     CreateLocation,
     UpdateLocation,
     DeleteLocation,

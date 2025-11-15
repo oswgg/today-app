@@ -32,7 +32,6 @@ async function bootstrap() {
         .setVersion('1.0')
         .addTag('auth', 'Authentication endpoints')
         .addTag('events', 'Event management endpoints')
-        .addTag('locations', 'Location management endpoints')
         .addTag('user', 'User management endpoints')
         .addBearerAuth(
             {
