@@ -42,62 +42,25 @@ export class PrismaService<T, E extends object>
         const prismaQuery: PrismaFindManyArgs = {};
 
         // where
+        let whereClause: Record<string, unknown> = {};
         if (query.where) {
-            // Type: Partial<{ [F in keyof T]: any }>
-            const where: Record<string, unknown> = {};
-            for (const key in query.where) {
-                const value = query.where[key];
-                if (value && typeof value === 'object' && 'operator' in value) {
-                    const filter = value as Filter;
-                    switch (filter.operator) {
-                        case 'eq':
-                            where[key] = filter.value;
-                            break;
-                        case 'neq':
-                            where[key] = { not: filter.value };
-                            break;
-                        case 'gt':
-                            where[key] = { gt: filter.value };
-                            break;
-                        case 'gte':
-                            where[key] = { gte: filter.value };
-                            break;
-                        case 'lt':
-                            where[key] = { lt: filter.value };
-                            break;
-                        case 'lte':
-                            where[key] = { lte: filter.value };
-                            break;
-                        case 'in':
-                            where[key] = { in: filter.value };
-                            break;
-                        case 'notIn':
-                            where[key] = { notIn: filter.value };
-                            break;
-                        case 'or':
-                            // 'or' operator works like 'in' in Prisma
-                            where[key] = { in: filter.value };
-                            break;
-                        case 'between':
-                            if (
-                                Array.isArray(filter.value) &&
-                                filter.value.length === 2
-                            ) {
-                                where[key] = {
-                                    gte: filter.value[0] as unknown,
-                                    lte: filter.value[1] as unknown,
-                                };
-                            }
-                            break;
-                        case 'contains':
-                            where[key] = { contains: filter.value };
-                            break;
-                    }
-                } else {
-                    where[key] = value;
-                }
+            whereClause = this.buildWhereClause(query.where);
+
+            // Extract nested relation filters and convert them to 'some' queries
+            whereClause =
+                this.convertNestedFiltersToRelationFilters(whereClause);
+        }
+
+        // Handle required includes - move their where conditions to main where
+        if (query.include) {
+            const requiredFilters = this.extractRequiredFilters(query.include);
+            if (Object.keys(requiredFilters).length > 0) {
+                whereClause = { ...whereClause, ...requiredFilters };
             }
-            prismaQuery.where = where;
+        }
+
+        if (Object.keys(whereClause).length > 0) {
+            prismaQuery.where = whereClause;
         }
 
         // select
@@ -129,6 +92,145 @@ export class PrismaService<T, E extends object>
         return prismaQuery as E;
     }
 
+    /**
+     * Convert nested object filters to Prisma relation filters using 'some'
+     * Example: { categories: { id: { in: [1] } } }
+     * -> { categories: { some: { id: { in: [1] } } } }
+     */
+    private convertNestedFiltersToRelationFilters(
+        where: Record<string, unknown>,
+    ): Record<string, unknown> {
+        const result: Record<string, unknown> = {};
+
+        for (const [key, value] of Object.entries(where)) {
+            if (value && typeof value === 'object' && !('operator' in value)) {
+                // This might be a nested relation filter
+                // Check if it contains filter operators or nested objects
+                if (this.isNestedRelationFilter(value)) {
+                    // Wrap in 'some' for array relations
+                    result[key] = {
+                        some: value,
+                    };
+                } else {
+                    result[key] = value;
+                }
+            } else {
+                result[key] = value;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Check if an object represents a nested relation filter
+     * (contains fields that look like filter conditions)
+     */
+    private isNestedRelationFilter(obj: unknown): boolean {
+        if (!obj || typeof obj !== 'object') {
+            return false;
+        }
+
+        // Check if any value in the object has filter-like properties
+        for (const value of Object.values(obj)) {
+            if (value && typeof value === 'object') {
+                // Has Prisma filter operators (in, not, gt, etc.)
+                if (
+                    'in' in value ||
+                    'not' in value ||
+                    'gt' in value ||
+                    'lt' in value ||
+                    'gte' in value ||
+                    'lte' in value ||
+                    'contains' in value ||
+                    'notIn' in value
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private extractRequiredFilters(
+        include: IncludeOptions,
+        parentPath: string[] = [],
+    ): Record<string, unknown> {
+        const filters: Record<string, unknown> = {};
+
+        for (const relation of include) {
+            // Check if this relation or any nested relation has required filters
+            const nestedRequired = this.findRequiredInPath(
+                relation.include || [],
+            );
+
+            if (nestedRequired) {
+                // Build the complete where condition for this path
+                if (parentPath.length === 0) {
+                    // At root level: use 'some' and build the nested path
+                    filters[relation.model] = {
+                        some: this.buildNestedRequiredWhere(
+                            relation.include || [],
+                        ),
+                    };
+                }
+            } else if (relation.required && relation.where) {
+                // This level has the required filter
+                const whereCondition = this.buildWhereClause(relation.where);
+
+                if (parentPath.length === 0) {
+                    filters[relation.model] = {
+                        some: whereCondition,
+                    };
+                }
+            }
+        }
+
+        return filters;
+    }
+
+    /**
+     * Check if there's any required filter in the nested includes
+     */
+    private findRequiredInPath(includes: IncludeOptions): boolean {
+        for (const include of includes) {
+            if (include.required && include.where) {
+                return true;
+            }
+            if (include.include && this.findRequiredInPath(include.include)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Build nested where conditions for required filters
+     * This recursively builds the path until it finds the required filter
+     */
+    private buildNestedRequiredWhere(
+        includes: IncludeOptions,
+    ): Record<string, unknown> {
+        for (const include of includes) {
+            if (include.required && include.where) {
+                // Found the required filter - return it
+                return {
+                    [include.model]: this.buildWhereClause(include.where),
+                };
+            } else if (include.include) {
+                // Keep nesting deeper
+                const nested = this.buildNestedRequiredWhere(include.include);
+                if (Object.keys(nested).length > 0) {
+                    return {
+                        [include.model]: nested,
+                    };
+                }
+            }
+        }
+        return {};
+    }
+
     private buildInclude(include?: IncludeOptions): object | undefined {
         if (!include) return undefined;
         return Object.fromEntries(
@@ -144,12 +246,74 @@ export class PrismaService<T, E extends object>
                         : relation.select === null
                           ? { select: false }
                           : {}),
-                    ...(relation.where ? { where: relation.where } : {}),
+                    // Only add where to include if it's not required (not moved to main where)
+                    ...(relation.where && !relation.required
+                        ? { where: this.buildWhereClause(relation.where) }
+                        : {}),
                     ...(relation.include
                         ? { include: this.buildInclude(relation.include) }
                         : {}),
                 },
             ]),
         );
+    }
+
+    private buildWhereClause(where: unknown): Record<string, unknown> {
+        if (!where || typeof where !== 'object') {
+            return where as Record<string, unknown>;
+        }
+
+        const result: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(where)) {
+            if (value && typeof value === 'object' && 'operator' in value) {
+                const filter = value as Filter;
+                switch (filter.operator) {
+                    case 'eq':
+                        result[key] = filter.value;
+                        break;
+                    case 'neq':
+                        result[key] = { not: filter.value };
+                        break;
+                    case 'gt':
+                        result[key] = { gt: filter.value };
+                        break;
+                    case 'gte':
+                        result[key] = { gte: filter.value };
+                        break;
+                    case 'lt':
+                        result[key] = { lt: filter.value };
+                        break;
+                    case 'lte':
+                        result[key] = { lte: filter.value };
+                        break;
+                    case 'in':
+                        result[key] = { in: filter.value };
+                        break;
+                    case 'notIn':
+                        result[key] = { notIn: filter.value };
+                        break;
+                    case 'or':
+                        result[key] = { in: filter.value };
+                        break;
+                    case 'between':
+                        if (
+                            Array.isArray(filter.value) &&
+                            filter.value.length === 2
+                        ) {
+                            result[key] = {
+                                gte: filter.value[0] as unknown,
+                                lte: filter.value[1] as unknown,
+                            };
+                        }
+                        break;
+                    case 'contains':
+                        result[key] = { contains: filter.value };
+                        break;
+                }
+            } else {
+                result[key] = value;
+            }
+        }
+        return result;
     }
 }

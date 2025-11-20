@@ -31,5 +31,6 @@ export type IncludeOptions = Array<{
     as?: string;
     select?: string[] | null;
     where?: unknown;
+    required?: boolean; // Si true, el where filtra los registros padre (INNER JOIN). Si false/undefined, solo filtra las relaciones (LEFT JOIN)
     include?: IncludeOptions;
 }>;

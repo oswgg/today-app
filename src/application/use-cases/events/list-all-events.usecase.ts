@@ -48,6 +48,8 @@ export class ListAllEvents {
                     {
                         model: 'category',
                         select: ['id', 'name', 'description'],
+                        required: true,
+                        where: filters?.where?.categories || undefined,
                     },
                 ],
             },

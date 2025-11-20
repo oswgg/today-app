@@ -14,8 +14,11 @@ import {
  *   -> { where: {...}, sort: { created_at: 'desc' }, limit: 10 }
  * - ?q=where[location_id=or[1],creator_id=eq[1]]offset[10]limit[20]
  *   -> { where: {...}, offset: 10, limit: 20 }
+ * - ?q=where[categories.id=in[1,2]]
+ *   -> { where: { categories: { id: { operator: 'in', value: [1, 2] } } } }
  *
  * Supported operators: eq, neq, gt, lt, gte, lte, in, notIn, between, contains, or
+ * Supports dot notation for nested fields: field.nested.property=op[value]
  */
 export class QueryStringParser {
     private static readonly VALID_OPERATORS: FilterOperator[] = [
@@ -131,16 +134,23 @@ export class QueryStringParser {
         for (const condition of conditions) {
             const parsed = this.parseCondition(condition.trim());
             if (parsed) {
+                const rootField = parsed.field.split('.')[0];
+
                 // Check if field is in whitelist (if provided)
                 if (
                     allowedFields &&
-                    !allowedFields.includes(parsed.field as keyof T)
+                    !allowedFields.includes(rootField as keyof T)
                 ) {
                     rejected.push(parsed.field);
                     continue;
                 }
 
-                where[parsed.field] = parsed.filter;
+                // Handle dot notation for nested fields
+                if (parsed.field.includes('.')) {
+                    this.setNestedValue(where, parsed.field, parsed.filter);
+                } else {
+                    where[parsed.field] = parsed.filter;
+                }
             }
         }
 
@@ -151,6 +161,31 @@ export class QueryStringParser {
                     : undefined,
             rejected,
         };
+    }
+
+    /**
+     * Set a nested value using dot notation
+     * Example: setNestedValue(obj, "categories.id", filter)
+     * -> obj.categories = { id: filter }
+     */
+    private static setNestedValue(
+        obj: Record<string, unknown>,
+        path: string,
+        value: Filter,
+    ): void {
+        const parts = path.split('.');
+        let current = obj;
+
+        for (let i = 0; i < parts.length - 1; i++) {
+            const part = parts[i];
+            if (!current[part] || typeof current[part] !== 'object') {
+                current[part] = {};
+            }
+            current = current[part] as Record<string, unknown>;
+        }
+
+        const lastPart = parts[parts.length - 1];
+        current[lastPart] = value;
     }
 
     /**
@@ -217,15 +252,16 @@ export class QueryStringParser {
 
     /**
      * Parse a single condition (field=operator[value])
+     * Supports dot notation: categories.id=in[1,2]
      */
     private static parseCondition(condition: string): {
         field: string;
         filter: Filter;
     } | null {
-        // Match pattern: field=operator[value]
+        // Match pattern: field=operator[value] or nested.field=operator[value]
         // The value part can contain commas, so we need to match everything inside brackets
         const match = condition.match(
-            /^([a-zA-Z_][a-zA-Z0-9_]*)=([a-z]+)\[([^\]]+)\]$/,
+            /^([a-zA-Z_][a-zA-Z0-9_.]*)=([a-z]+)\[([^\]]+)\]$/,
         );
 
         if (!match) {

@@ -11,6 +11,8 @@ import { type EventEntity } from 'src/domain/entities/event.entity';
 import { CategoryEntity } from 'src/domain/entities/category.entity';
 import { ListAvailableCategories } from 'src/application/use-cases/events/list-available-categories.usecase';
 import { Public } from '../shared/decorators/public.decorator';
+import { QueryFilter } from '../shared/decorators/query-filter.decorator';
+import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
 
 @ApiTags('Events (Public)')
 @Controller('events')
@@ -31,8 +33,10 @@ export class PublicEventsController {
             transform: (v: string) => parseFloat(v) || undefined,
         })
         radius?: number,
+        @QueryFilter<EventEntity>(['creator_id', 'categories', 'start_time'])
+        filters?: QueryOptions<EventEntity>,
     ): Promise<EventEntity[]> {
-        return await this.listEvents.execute({ lat, lng, radius });
+        return await this.listEvents.execute({ lat, lng, radius, filters });
     }
 
     @Get('/categories')

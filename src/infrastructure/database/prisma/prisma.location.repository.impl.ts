@@ -91,7 +91,6 @@ export class PrismaLocationRepository
         id: number | bigint,
         data: InputUpdateLocationDto,
     ): Promise<LocationEntity> {
-        console.log(data);
         const _location = await this.location.update({
             where: { id },
             data,
