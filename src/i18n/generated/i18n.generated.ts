@@ -13,6 +13,7 @@ export type I18nTranslations = {
             "entity_not_found": string;
             "unauthorized": string;
             "forbidden": string;
+            "filtering_not_allowed": string;
         };
         "success": {
             "operation_completed": string;
