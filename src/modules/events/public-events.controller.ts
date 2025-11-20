@@ -33,7 +33,13 @@ export class PublicEventsController {
             transform: (v: string) => parseFloat(v) || undefined,
         })
         radius?: number,
-        @QueryFilter<EventEntity>(['creator_id', 'categories', 'start_time'])
+        @QueryFilter<EventEntity>([
+            'creator_id',
+            'start_time',
+            'title',
+            'categories',
+            'creator',
+        ])
         filters?: QueryOptions<EventEntity>,
     ): Promise<EventEntity[]> {
         return await this.listEvents.execute({ lat, lng, radius, filters });

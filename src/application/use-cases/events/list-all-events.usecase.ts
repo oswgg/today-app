@@ -41,19 +41,27 @@ export class ListAllEvents {
             {
                 model: 'creator',
                 select: ['id', 'name'],
+                where: filters?.where?.creator,
+                required: !!filters?.where?.creator,
+                relation: 'one' as const,
             },
             {
                 model: 'categories',
+                relation: 'many' as const,
                 include: [
                     {
                         model: 'category',
                         select: ['id', 'name', 'description'],
-                        required: true,
-                        where: filters?.where?.categories || undefined,
+                        where: filters?.where?.categories,
+                        required: !!filters?.where?.categories,
+                        relation: 'one' as const,
                     },
                 ],
             },
         ];
+
+        // Excluir filtros de relaciones del where principal
+        const { creator, categories, ...mainWhere } = filters?.where || {};
 
         // Build query options from filters
         const queryOptions: QueryOptions<EventEntity> = {
@@ -62,6 +70,7 @@ export class ListAllEvents {
             ...(filters?.sort && { sort: filters.sort }),
             ...(filters?.limit && { limit: filters.limit }),
             ...(filters?.offset && { offset: filters.offset }),
+            ...(Object.keys(mainWhere).length > 0 && { where: mainWhere }),
         };
 
         // If we have position, use PostGIS-based findNearby
@@ -70,17 +79,11 @@ export class ListAllEvents {
                 lat as number,
                 lng as number,
                 radius,
-                {
-                    ...queryOptions,
-                    where: filters?.where,
-                },
+                queryOptions,
             );
         }
 
         // Otherwise use standard findAll with optional filters
-        return await this.eventsRepository.findAll({
-            ...queryOptions,
-            where: filters?.where,
-        });
+        return await this.eventsRepository.findAll(queryOptions);
     }
 }

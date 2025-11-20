@@ -96,6 +96,8 @@ export class PrismaService<T, E extends object>
      * Convert nested object filters to Prisma relation filters using 'some'
      * Example: { categories: { id: { in: [1] } } }
      * -> { categories: { some: { id: { in: [1] } } } }
+     * 
+     * By default, assumes 'many' relations (uses 'some')
      */
     private convertNestedFiltersToRelationFilters(
         where: Record<string, unknown>,
@@ -107,7 +109,8 @@ export class PrismaService<T, E extends object>
                 // This might be a nested relation filter
                 // Check if it contains filter operators or nested objects
                 if (this.isNestedRelationFilter(value)) {
-                    // Wrap in 'some' for array relations
+                    // By default, wrap in 'some' for array relations
+                    // This is a fallback when no explicit include with relation type is provided
                     result[key] = {
                         some: value,
                     };
@@ -168,21 +171,29 @@ export class PrismaService<T, E extends object>
             if (nestedRequired) {
                 // Build the complete where condition for this path
                 if (parentPath.length === 0) {
-                    // At root level: use 'some' and build the nested path
-                    filters[relation.model] = {
-                        some: this.buildNestedRequiredWhere(
-                            relation.include || [],
-                        ),
-                    };
+                    // At root level: use 'some' only if relation is 'many'
+                    const nestedWhere = this.buildNestedRequiredWhere(
+                        relation.include || [],
+                    );
+                    
+                    // Default to 'many' if relation type not specified
+                    const relationType = relation.relation || 'many';
+                    
+                    filters[relation.model] = relationType === 'many'
+                        ? { some: nestedWhere }
+                        : nestedWhere;
                 }
             } else if (relation.required && relation.where) {
                 // This level has the required filter
                 const whereCondition = this.buildWhereClause(relation.where);
 
                 if (parentPath.length === 0) {
-                    filters[relation.model] = {
-                        some: whereCondition,
-                    };
+                    // Default to 'many' if relation type not specified
+                    const relationType = relation.relation || 'many';
+                    
+                    filters[relation.model] = relationType === 'many'
+                        ? { some: whereCondition }
+                        : whereCondition;
                 }
             }
         }
@@ -208,13 +219,15 @@ export class PrismaService<T, E extends object>
     /**
      * Build nested where conditions for required filters
      * This recursively builds the path until it finds the required filter
+     * Uses the 'relation' property to determine whether to use 'some' or direct filtering
      */
     private buildNestedRequiredWhere(
         includes: IncludeOptions,
     ): Record<string, unknown> {
         for (const include of includes) {
             if (include.required && include.where) {
-                // Found the required filter - return it
+                // Found the required filter - return it directly
+                // (no 'some' here since parent will handle it based on parent's relation type)
                 return {
                     [include.model]: this.buildWhereClause(include.where),
                 };
