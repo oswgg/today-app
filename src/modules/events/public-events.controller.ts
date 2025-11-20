@@ -27,10 +27,12 @@ export class PublicEventsController {
     async getAllEvents(
         @Query('lat', { transform: (v: string) => parseFloat(v) }) lat?: number,
         @Query('lng', { transform: (v: string) => parseFloat(v) }) lng?: number,
-        @Query('radius', { transform: (v: string) => parseFloat(v) })
+        @Query('radius', {
+            transform: (v: string) => parseFloat(v) || undefined,
+        })
         radius?: number,
     ): Promise<EventEntity[]> {
-        return await this.listEvents.execute(lat, lng, radius);
+        return await this.listEvents.execute({ lat, lng, radius });
     }
 
     @Get('/categories')
