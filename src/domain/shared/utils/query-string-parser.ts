@@ -72,15 +72,13 @@ export class QueryStringParser {
         }
 
         // Parse limit (supports both limit[10] and limit=10)
-        const limitMatch = queryString.match(/limit\[(\d+)\]|[&?]limit=(\d+)/);
+        const limitMatch = queryString.match(/limit\[(\d+)\]|limit=(\d+)/);
         if (limitMatch) {
             result.limit = parseInt(limitMatch[1] || limitMatch[2], 10);
         }
 
         // Parse offset (supports both offset[10] and offset=10)
-        const offsetMatch = queryString.match(
-            /offset\[(\d+)\]|[&?]offset=(\d+)/,
-        );
+        const offsetMatch = queryString.match(/offset\[(\d+)\]|offset=(\d+)/);
         if (offsetMatch) {
             result.offset = parseInt(offsetMatch[1] || offsetMatch[2], 10);
         }
@@ -125,12 +123,13 @@ export class QueryStringParser {
         where?: Partial<{ [F in keyof T]: Filter | T[F] }>;
         rejected: string[];
     } {
-        const conditions = whereString.split(',').map((c) => c.trim());
+        // Split conditions by comma, but only if not inside brackets
+        const conditions = this.splitConditions(whereString);
         const where: Record<string, Filter | unknown> = {};
         const rejected: string[] = [];
 
         for (const condition of conditions) {
-            const parsed = this.parseCondition(condition);
+            const parsed = this.parseCondition(condition.trim());
             if (parsed) {
                 // Check if field is in whitelist (if provided)
                 if (
@@ -180,6 +179,43 @@ export class QueryStringParser {
     }
 
     /**
+     * Split conditions by comma, but only if comma is not inside brackets
+     * Example: "creator_id=eq[1],location_id=in[1,2,3]" -> ["creator_id=eq[1]", "location_id=in[1,2,3]"]
+     */
+    private static splitConditions(whereString: string): string[] {
+        const conditions: string[] = [];
+        let current = '';
+        let bracketDepth = 0;
+
+        for (let i = 0; i < whereString.length; i++) {
+            const char = whereString[i];
+
+            if (char === '[') {
+                bracketDepth++;
+                current += char;
+            } else if (char === ']') {
+                bracketDepth--;
+                current += char;
+            } else if (char === ',' && bracketDepth === 0) {
+                // Comma outside brackets - this is a separator
+                if (current.trim()) {
+                    conditions.push(current.trim());
+                }
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+
+        // Add the last condition
+        if (current.trim()) {
+            conditions.push(current.trim());
+        }
+
+        return conditions;
+    }
+
+    /**
      * Parse a single condition (field=operator[value])
      */
     private static parseCondition(condition: string): {
@@ -187,8 +223,9 @@ export class QueryStringParser {
         filter: Filter;
     } | null {
         // Match pattern: field=operator[value]
+        // The value part can contain commas, so we need to match everything inside brackets
         const match = condition.match(
-            /^([a-zA-Z_][a-zA-Z0-9_]*)=([a-z]+)\[(.+?)\]$/,
+            /^([a-zA-Z_][a-zA-Z0-9_]*)=([a-z]+)\[([^\]]+)\]$/,
         );
 
         if (!match) {

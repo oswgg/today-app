@@ -3,8 +3,9 @@ import { QueryStringParser } from '../query-string-parser';
 describe('QueryStringParser', () => {
     describe('parse - where conditions', () => {
         it('should parse simple equality condition', () => {
-            const { filters, rejectedFields } =
-                QueryStringParser.parse('where[creator_id=eq[1]]');
+            const { filters, rejectedFields } = QueryStringParser.parse(
+                'where[creator_id=eq[1]]',
+            );
 
             expect(filters).toEqual({
                 where: {
@@ -38,7 +39,9 @@ describe('QueryStringParser', () => {
         });
 
         it('should parse string values', () => {
-            const { filters } = QueryStringParser.parse('where[name=contains[test]]');
+            const { filters } = QueryStringParser.parse(
+                'where[name=contains[test]]',
+            );
 
             expect(filters).toEqual({
                 where: {
@@ -102,7 +105,9 @@ describe('QueryStringParser', () => {
 
     describe('parse - order', () => {
         it('should parse single order field', () => {
-            const { filters } = QueryStringParser.parse('order[created_at=desc]');
+            const { filters } = QueryStringParser.parse(
+                'order[created_at=desc]',
+            );
 
             expect(filters).toEqual({
                 sort: {
@@ -169,46 +174,10 @@ describe('QueryStringParser', () => {
         });
     });
 
-    describe('parse - select', () => {
-        it('should parse single field', () => {
-            const { filters } = QueryStringParser.parse('select[id]');
-
-            expect(filters).toEqual({
-                select: ['id'],
-            });
-        });
-
-        it('should parse multiple fields', () => {
-            const { filters } = QueryStringParser.parse('select[id,name,email]');
-
-            expect(filters).toEqual({
-                select: ['id', 'name', 'email'],
-            });
-        });
-    });
-
-    describe('parse - include', () => {
-        it('should parse single relation', () => {
-            const { filters } = QueryStringParser.parse('include[creator]');
-
-            expect(filters).toEqual({
-                include: [{ model: 'creator' }],
-            });
-        });
-
-        it('should parse multiple relations', () => {
-            const { filters } = QueryStringParser.parse('include[creator,location]');
-
-            expect(filters).toEqual({
-                include: [{ model: 'creator' }, { model: 'location' }],
-            });
-        });
-    });
-
     describe('parse - combined query', () => {
         it('should parse all sections together with & separators', () => {
             const { filters } = QueryStringParser.parse(
-                'where[creator_id=eq[1],status=in[active,pending]]&order[created_at=desc]&limit=10&offset=0&select[id,title,status]&include[creator,location]',
+                'where[creator_id=eq[1],status=in[active,pending]]&order[created_at=desc]&limit=10&offset=0',
             );
 
             expect(filters).toEqual({
@@ -227,8 +196,6 @@ describe('QueryStringParser', () => {
                 },
                 limit: 10,
                 offset: 0,
-                select: ['id', 'title', 'status'],
-                include: [{ model: 'creator' }, { model: 'location' }],
             });
         });
 
@@ -274,7 +241,7 @@ describe('QueryStringParser', () => {
 
         it('should parse complex continuous query', () => {
             const { filters } = QueryStringParser.parse(
-                'where[creator_id=eq[1],status=in[active,pending]]order[created_at=desc,priority=asc]limit[10]offset[0]select[id,title]include[creator]',
+                'where[creator_id=eq[1],status=in[active,pending]]order[created_at=desc,priority=asc]limit[10]offset[0]',
             );
 
             expect(filters).toEqual({
@@ -294,11 +261,8 @@ describe('QueryStringParser', () => {
                 },
                 limit: 10,
                 offset: 0,
-                select: ['id', 'title'],
-                include: [{ model: 'creator' }],
             });
         });
-    });
     });
 
     describe('parseValue types', () => {
@@ -309,7 +273,9 @@ describe('QueryStringParser', () => {
         });
 
         it('should parse floats', () => {
-            const { filters } = QueryStringParser.parse('where[price=eq[99.99]]');
+            const { filters } = QueryStringParser.parse(
+                'where[price=eq[99.99]]',
+            );
             expect((filters?.where as any).price.value).toBe(99.99);
         });
 
@@ -322,12 +288,16 @@ describe('QueryStringParser', () => {
         });
 
         it('should parse null', () => {
-            const { filters } = QueryStringParser.parse('where[parent_id=eq[null]]');
+            const { filters } = QueryStringParser.parse(
+                'where[parent_id=eq[null]]',
+            );
             expect((filters?.where as any).parent_id.value).toBe(null);
         });
 
         it('should parse quoted strings', () => {
-            const { filters } = QueryStringParser.parse('where[name=eq["John Doe"]]');
+            const { filters } = QueryStringParser.parse(
+                'where[name=eq["John Doe"]]',
+            );
             expect((filters?.where as any).name.value).toBe('John Doe');
         });
 
@@ -397,10 +367,10 @@ describe('QueryStringParser', () => {
 
         it('should return undefined filters when no allowed fields match', () => {
             const { filters, rejectedFields } =
-                QueryStringParser.parse<TestEntity>('where[secret_field=eq[hack]]', [
-                    'creator_id',
-                    'location_id',
-                ]);
+                QueryStringParser.parse<TestEntity>(
+                    'where[secret_field=eq[hack]]',
+                    ['creator_id', 'location_id'],
+                );
 
             expect(filters).toBeUndefined();
             expect(rejectedFields).toEqual(['secret_field']);

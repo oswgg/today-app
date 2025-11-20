@@ -13,7 +13,7 @@ describe('DeleteEvent use case', () => {
     let mockEventsRepository: jest.Mocked<
         Pick<EventsRepository, 'findById' | 'deleteById'>
     >;
-    let mockI18nService: jest.Mocked<Pick<I18nService, 'translate'>>;
+    let mockI18nService: jest.Mocked<Pick<I18nService, 't'>>;
 
     beforeEach(async () => {
         mockEventsRepository = {
@@ -22,7 +22,7 @@ describe('DeleteEvent use case', () => {
         };
 
         mockI18nService = {
-            translate: jest.fn().mockResolvedValue('Event not found'),
+            t: jest.fn().mockReturnValue('Event not found'),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -79,7 +79,7 @@ describe('DeleteEvent use case', () => {
 
         expect(mockEventsRepository.findById).toHaveBeenCalledWith(eventId);
         expect(mockEventsRepository.deleteById).not.toHaveBeenCalled();
-        expect(mockI18nService.translate).toHaveBeenCalledWith(
+        expect(mockI18nService.t).toHaveBeenCalledWith(
             'events.errors.event_not_found',
         );
     });
