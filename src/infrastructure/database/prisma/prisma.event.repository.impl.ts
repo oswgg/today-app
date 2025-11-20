@@ -70,6 +70,61 @@ export class PrismaEventsRepository
         return _events.map(PrismaEventMapper.toEntity);
     }
 
+    async findNearby(
+        lat: number,
+        lng: number,
+        radiusInKm: number,
+        options?: EventQueryOptions,
+    ): Promise<EventEntity[]> {
+        // Use PostGIS to find events within radius, ordered by distance
+        const events = (await this.$queryRaw`
+            SELECT 
+                e.*,
+                ST_DistanceSphere(
+                    ST_MakePoint(e.lng, e.lat),
+                    ST_MakePoint(${lng}, ${lat})
+                ) as distance_meters
+            FROM 
+                events e
+            WHERE 
+                e.lng IS NOT NULL 
+                AND e.lat IS NOT NULL
+                AND ST_DWithin(
+                    ST_SetSRID(ST_MakePoint(e.lng, e.lat), 4326)::geography,
+                    ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography,
+                    ${radiusInKm * 1000}
+                )
+            ORDER BY 
+                distance_meters
+            ${options?.limit ? Prisma.sql`LIMIT ${options.limit}` : Prisma.empty}
+            ${options?.offset ? Prisma.sql`OFFSET ${options.offset}` : Prisma.empty}
+        `) as any[];
+
+        // If no include options, return mapped events directly
+        if (!options?.include || options.include.length === 0) {
+            return events.map(PrismaEventMapper.toEntity);
+        }
+
+        // If include is needed, fetch full event data with relations
+        const eventIds = events.map((e) => e.id);
+        if (eventIds.length === 0) {
+            return [];
+        }
+
+        const fullEvents = await this.event.findMany({
+            where: { id: { in: eventIds } },
+            ...this.buildQuery(options),
+        });
+
+        // Preserve the order from the PostGIS query
+        const eventMap = new Map(fullEvents.map((e) => [e.id, e]));
+        const orderedEvents = eventIds
+            .map((id) => eventMap.get(id))
+            .filter((e) => e !== undefined);
+
+        return orderedEvents.map(PrismaEventMapper.toEntity);
+    }
+
     async listAvailableCategories(): Promise<CategoryEntity[]> {
         return await this.category.findMany();
     }

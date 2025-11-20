@@ -4,7 +4,6 @@ import {
     EVENTS_REPOSITORY_TOKEN,
     EventsRepository,
 } from 'src/domain/repositories/events.repository';
-import { boundingBox } from 'src/domain/shared/utils/bounding-box';
 import { QueryOptions } from 'src/application/dtos/shared/query-options.dto';
 
 export interface ListAllEventsOptions {
@@ -29,68 +28,57 @@ export class ListAllEvents {
 
         // Determine whether we have a user position (lat/lng) — these are
         // positional inputs used to compute a bounding box, NOT query filters
-        // themselves. If position is provided we build location filters, but
-        // if not provided we must NOT force location filtering so callers can
-        // list events without providing position (e.g. filter only by creator).
-        const hasPosition = typeof lat === 'number' && typeof lng === 'number';
+        // themselves. If position is provided we use findNearby (PostGIS),
+        // if not provided we use findAll with standard filters
+        const hasPosition =
+            typeof lat === 'number' &&
+            typeof lng === 'number' &&
+            !isNaN(lat) &&
+            !isNaN(lng);
 
-        const bounding = hasPosition
-            ? boundingBox(lat as number, lng as number, radius)
-            : undefined;
+        // Include configuration for both queries
+        const includeConfig = [
+            {
+                model: 'creator',
+                select: ['id', 'name'],
+            },
+            {
+                model: 'categories',
+                include: [
+                    {
+                        model: 'category',
+                        select: ['id', 'name', 'description'],
+                    },
+                ],
+            },
+        ];
 
-        const locationWhere =
-            hasPosition && bounding
-                ? {
-                      lat: {
-                          operator: 'between' as const,
-                          value: [bounding.min_lat, bounding.max_lat],
-                      },
-                      lng: {
-                          operator: 'between' as const,
-                          value: [bounding.min_lng, bounding.max_lng],
-                      },
-                  }
-                : undefined;
-
-        // Merge location filters (only if we have position) with any other
-        // filters provided via `filters.where`. If neither exists,
-        // pass `undefined` so repository won't filter by location.
-        const filtersWhere = filters?.where ?? undefined;
-
-        const mergedWhere =
-            locationWhere || filtersWhere
-                ? {
-                      ...(locationWhere ?? {}),
-                      ...(filtersWhere ?? {}),
-                  }
-                : undefined;
-
-        return await this.eventsRepository.findAll({
-            where: mergedWhere,
-            include: [
-                {
-                    model: 'creator',
-                    select: ['id', 'name'],
-                },
-                {
-                    model: 'categories',
-                    include: [
-                        {
-                            model: 'category',
-                            select: ['id', 'name', 'description'],
-                        },
-                    ],
-                },
-            ],
-            // Merge other query options (select, sort, limit, offset) if provided
-            ...(filters?.select && {
-                select: filters.select,
-            }),
+        // Build query options from filters
+        const queryOptions: QueryOptions<EventEntity> = {
+            include: includeConfig,
+            ...(filters?.select && { select: filters.select }),
             ...(filters?.sort && { sort: filters.sort }),
             ...(filters?.limit && { limit: filters.limit }),
-            ...(filters?.offset && {
-                offset: filters.offset,
-            }),
+            ...(filters?.offset && { offset: filters.offset }),
+        };
+
+        // If we have position, use PostGIS-based findNearby
+        if (hasPosition) {
+            return await this.eventsRepository.findNearby(
+                lat as number,
+                lng as number,
+                radius,
+                {
+                    ...queryOptions,
+                    where: filters?.where,
+                },
+            );
+        }
+
+        // Otherwise use standard findAll with optional filters
+        return await this.eventsRepository.findAll({
+            ...queryOptions,
+            where: filters?.where,
         });
     }
 }

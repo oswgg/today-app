@@ -6,6 +6,12 @@ export interface EventsRepository {
     create(data: CreateEventDto): Promise<EventEntity>;
     findById(id: number): Promise<EventEntity | null>;
     findAll(options?: EventQueryOptions): Promise<EventEntity[]>;
+    findNearby(
+        lat: number,
+        lng: number,
+        radiusInKm: number,
+        options?: EventQueryOptions,
+    ): Promise<EventEntity[]>;
     listAvailableCategories(): Promise<CategoryEntity[]>;
     deleteById(id: number): Promise<void>;
 }

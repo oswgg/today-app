@@ -9,11 +9,14 @@ import { ConfigModule } from 'src/config/config.module';
 
 describe('ListAllEvents use case', () => {
     let useCase: ListAllEvents;
-    let mockEventsRepository: jest.Mocked<Pick<EventsRepository, 'findAll'>>;
+    let mockEventsRepository: jest.Mocked<
+        Pick<EventsRepository, 'findAll' | 'findNearby'>
+    >;
 
     beforeEach(async () => {
         mockEventsRepository = {
             findAll: jest.fn(),
+            findNearby: jest.fn(),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -116,7 +119,7 @@ describe('ListAllEvents use case', () => {
             },
         ];
 
-        mockEventsRepository.findAll.mockResolvedValue(events);
+        mockEventsRepository.findNearby.mockResolvedValue(events);
 
         const result = await useCase.execute({
             lat: 40.7128,
@@ -125,16 +128,12 @@ describe('ListAllEvents use case', () => {
         });
 
         expect(result).toEqual(events);
-        expect(mockEventsRepository.findAll).toHaveBeenCalledWith(
+        expect(mockEventsRepository.findNearby).toHaveBeenCalledWith(
+            40.7128,
+            -74.006,
+            10,
             expect.objectContaining({
-                where: expect.objectContaining({
-                    lat: expect.objectContaining({
-                        operator: 'between',
-                    }),
-                    lng: expect.objectContaining({
-                        operator: 'between',
-                    }),
-                }),
+                where: undefined,
             }),
         );
     });
@@ -142,7 +141,7 @@ describe('ListAllEvents use case', () => {
     it('should combine position and additional filters', async () => {
         const events: EventEntity[] = [];
 
-        mockEventsRepository.findAll.mockResolvedValue(events);
+        mockEventsRepository.findNearby.mockResolvedValue(events);
 
         await useCase.execute({
             lat: 40.7128,
@@ -156,13 +155,14 @@ describe('ListAllEvents use case', () => {
             },
         });
 
-        expect(mockEventsRepository.findAll).toHaveBeenCalledWith(
+        expect(mockEventsRepository.findNearby).toHaveBeenCalledWith(
+            40.7128,
+            -74.006,
+            5,
             expect.objectContaining({
-                where: expect.objectContaining({
-                    lat: expect.any(Object),
-                    lng: expect.any(Object),
+                where: {
                     creator_id: { operator: 'eq', value: 1 },
-                }),
+                },
                 limit: 10,
             }),
         );
