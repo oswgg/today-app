@@ -73,4 +73,8 @@ export class PrismaEventsRepository
     async listAvailableCategories(): Promise<CategoryEntity[]> {
         return await this.category.findMany();
     }
+
+    async deleteById(id: number): Promise<void> {
+        await this.event.delete({ where: { id } });
+    }
 }

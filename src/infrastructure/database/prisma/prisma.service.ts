@@ -74,6 +74,10 @@ export class PrismaService<T, E extends object>
                         case 'notIn':
                             where[key] = { notIn: filter.value };
                             break;
+                        case 'or':
+                            // 'or' operator works like 'in' in Prisma
+                            where[key] = { in: filter.value };
+                            break;
                         case 'between':
                             if (
                                 Array.isArray(filter.value) &&

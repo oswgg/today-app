@@ -8,7 +8,8 @@ export type FilterOperator =
     | 'in'
     | 'notIn'
     | 'between'
-    | 'contains';
+    | 'contains'
+    | 'or';
 
 export interface Filter<T = any> {
     field?: keyof T;

@@ -5,7 +5,8 @@
         "not_found": "Recurso no encontrado",
         "entity_not_found": "{entity} no encontrado",
         "unauthorized": "Acceso no autorizado",
-        "forbidden": "Acceso prohibido"
+        "forbidden": "Acceso prohibido",
+        "filtering_not_allowed": "No está permitido filtrar por el campo '{field}'. Campos permitidos: {allowedFields}"
     },
     "success": {
         "operation_completed": "Operación completada con éxito"

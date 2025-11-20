@@ -78,6 +78,24 @@ export const ApiGetEventById = () =>
         }),
     );
 
+export const APiGetMyEvents = () =>
+    applyDecorators(
+        ApiOperation({
+            summary: 'Get my events',
+            description: 'List all events created by the authenticated user',
+        }),
+        ApiResponse({
+            status: 200,
+            description: 'List of user-created events',
+            type: [EventResponseDto],
+        }),
+        ApiResponse({
+            status: 401,
+            description: 'Unauthorized',
+            type: ErrorResponseDto,
+        }),
+    );
+
 export const ApiCreateEvent = () =>
     applyDecorators(
         ApiBearerAuth('JWT-auth'),
@@ -99,6 +117,35 @@ export const ApiCreateEvent = () =>
         ApiResponse({
             status: 403,
             description: 'Forbidden - Organizer/Institution role required',
+            type: ErrorResponseDto,
+        }),
+    );
+
+export const DeleteEventById = () =>
+    applyDecorators(
+        ApiBearerAuth('JWT-auth'),
+        ApiOperation({
+            summary: 'Delete event by ID',
+            description: 'Delete an event created by the authenticated user',
+        }),
+        ApiParam({ name: 'id', type: Number, description: 'Event ID' }),
+        ApiResponse({
+            status: 204,
+            description: 'Event deleted successfully',
+        }),
+        ApiResponse({
+            status: 401,
+            description: 'Unauthorized',
+            type: ErrorResponseDto,
+        }),
+        ApiResponse({
+            status: 403,
+            description: 'Forbidden - Not the event creator',
+            type: ErrorResponseDto,
+        }),
+        ApiResponse({
+            status: 404,
+            description: 'Event not found',
             type: ErrorResponseDto,
         }),
     );
