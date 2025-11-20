@@ -7,6 +7,7 @@ export interface EventsRepository {
     findById(id: number): Promise<EventEntity | null>;
     findAll(options?: EventQueryOptions): Promise<EventEntity[]>;
     listAvailableCategories(): Promise<CategoryEntity[]>;
+    deleteById(id: number): Promise<void>;
 }
 
 export const EVENTS_REPOSITORY_TOKEN = Symbol('events.repository');
