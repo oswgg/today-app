@@ -153,3 +153,5 @@ jspm_packages/
 
 /generated/prisma
 /public/
+
+uploads/

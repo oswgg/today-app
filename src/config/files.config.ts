@@ -6,4 +6,8 @@ export class FileDestinations {
     static get publicDirectory() {
         return './public';
     }
+
+    static get privateVerificationDocuments() {
+        return './uploads/private/verification-documents';
+    }
 }

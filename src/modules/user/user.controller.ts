@@ -17,6 +17,7 @@ import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validato
 import { ZodCreateVerificationRequestSchema } from 'src/infrastructure/http/validator/zod/auth/zod.create-verification-request.schema';
 import { CreateVerificationRequestDto } from 'src/application/dtos/auth/verification-requests/create-verification.dto';
 import { ValidationPipe } from '../shared/pipes/validation.pipe';
+import { MulterConfigFactory } from 'src/config/multer.config';
 
 @ApiTags('user')
 @ApiBearerAuth('JWT-auth')
@@ -30,12 +31,15 @@ export class UserController {
 
     @Post('verification-request')
     @UseInterceptors(
-        FileFieldsInterceptor([
-            {
-                name: 'id_document',
-                maxCount: 1,
-            },
-        ]),
+        FileFieldsInterceptor(
+            [
+                {
+                    name: 'document_id',
+                    maxCount: 1,
+                },
+            ],
+            MulterConfigFactory.basic,
+        ),
     )
     async VerificationRequest(
         @User() user: JwtUserPayload,
@@ -45,12 +49,13 @@ export class UserController {
             ),
         )
         body: Omit<CreateVerificationRequestDto, 'documents' | 'userId'>,
-        @UploadedFiles() files: { id_document?: Express.Multer.File[] },
+        @UploadedFiles() files: { document_id?: Express.Multer.File[] },
     ) {
         const result = await this.createVerificationRequest.execute({
             userId: user.id,
             ...body,
             documents: [],
+            uploadedFiles: files.document_id || [],
         });
 
         // Exclude documents from response

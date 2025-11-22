@@ -11,6 +11,8 @@ import { UserInterestEventsModule } from './interests/events/user-interest-event
 import { VERIFICATION_REQUESTS_REPO_TOKEN } from 'src/domain/repositories/verification-requests.repo';
 import { PrismaVerificationRequestRespositoryImpl } from 'src/infrastructure/database/prisma/prisma.verification-requests.repo.impl';
 import { CreateVerificationRequest } from 'src/application/use-cases/auth/verification-requests/create-verification-request.usecase';
+import { FILE_SERVICE_TOKEN } from 'src/domain/services/files.service';
+import { PureFileService } from 'src/infrastructure/services/pure.service.impl';
 
 @Module({
     imports: [
@@ -28,6 +30,10 @@ import { CreateVerificationRequest } from 'src/application/use-cases/auth/verifi
         {
             provide: VERIFICATION_REQUESTS_REPO_TOKEN,
             useClass: PrismaVerificationRequestRespositoryImpl,
+        },
+        {
+            provide: FILE_SERVICE_TOKEN,
+            useClass: PureFileService,
         },
         GetUser,
         CreateVerificationRequest,

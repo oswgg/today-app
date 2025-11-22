@@ -46,21 +46,24 @@ export class PrismaVerificationRequestRespositoryImpl
         const request = await this.verificationRequest.create({
             data: {
                 user_id: BigInt(data.userId),
-                documents: {
-                    createMany: {
-                        data: data.documents.map((doc) => ({
-                            url: doc.url,
-                            type: doc.fileType,
-                        })),
-                    },
-                },
                 contact_name: data.contactName,
                 phone_number: data.phoneNumber,
-                requested_role: data.requestedRole,
+                requested_role: data.requestedRole as any,
                 business_name: data.businessName,
                 socials_networks: data.socialsMediaLinks,
                 google_maps_url: data.googleMapsLink,
                 website_url: data.websiteLink,
+                documents: {
+                    create: data.documents.map((doc) => ({
+                        url: doc.url,
+                        file_type: doc.fileType,
+                        uploaded_at: doc.uploadedAt,
+                    })),
+                },
+            },
+            include: {
+                documents: true,
+                user: true,
             },
         });
 
