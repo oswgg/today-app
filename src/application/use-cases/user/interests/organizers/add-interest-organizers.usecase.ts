@@ -4,7 +4,7 @@ import {
     USER_INTEREST_ORGANIZER_REPO_TOKEN,
     UserInterestOrganizerRepository,
 } from 'src/domain/repositories/user-interest-organizer.repository';
-import { UserInterestOrganizerEntity } from 'src/domain/entities/user-interest-organizer.entity';
+import { UserInterestOrganizerEntity } from 'src/domain/entities/users/interests/user-interest-organizer.entity';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import {
     USER_REPO_TOKEN,

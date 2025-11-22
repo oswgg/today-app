@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserInterestOrganizerRepository } from '../../../domain/repositories/user-interest-organizer.repository';
-import { UserInterestOrganizerEntity } from '../../../domain/entities/user-interest-organizer.entity';
+import { UserInterestOrganizerEntity } from '../../../domain/entities/users/interests/user-interest-organizer.entity';
 import { PrismaClient } from 'generated/prisma';
 
 @Injectable()

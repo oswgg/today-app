@@ -6,7 +6,7 @@ import {
 } from 'src/domain/repositories/user-interest-event.repository';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { AddInterestResultDto } from 'src/application/dtos/user/interests/shared/add-interest-result.dto';
-import { UserInterestEventEntity } from 'src/domain/entities/user-interest-event.entity';
+import { UserInterestEventEntity } from 'src/domain/entities/users/interests/user-interest-event.entity';
 
 @Injectable()
 export class AddInterestEvents {

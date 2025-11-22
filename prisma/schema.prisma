@@ -17,21 +17,23 @@ model SeedHistory {
 }
 
 model User {
-    id         BigInt   @id @default(autoincrement())
-    name       String   @db.VarChar
-    email      String   @unique @db.VarChar
-    role       UserRole @default(USER)
-    created_at DateTime @default(now()) @db.Timestamptz(6)
+    id         BigInt        @id @default(autoincrement())
+    name       String        @db.VarChar
+    email      String        @unique @db.VarChar
+    role       UserRole      @default(USER)
+    created_at DateTime      @default(now()) @db.Timestamptz(6)
     uid        String?
+    status     AccountStatus @default(NO_VERIFIED)
 
-    organizerProfile   OrganizerProfile?
-    institutionProfile InstitutionProfile?
-    createdEvents      Event[]
-    createdLocations   Location[]
-    interestCategories UserInterestCategory[]
-    interestLocations  UserInterestLocation[]
-    interestOrganizers UserInterestOrganizer[]
-    interestEvents     UserInterestEvent[]
+    organizerProfile     OrganizerProfile?
+    institutionProfile   InstitutionProfile?
+    createdEvents        Event[]
+    createdLocations     Location[]
+    interestCategories   UserInterestCategory[]
+    interestLocations    UserInterestLocation[]
+    interestOrganizers   UserInterestOrganizer[]
+    interestEvents       UserInterestEvent[]
+    verificationRequests VerificationRequest[]
 
     @@map("users")
 }
@@ -69,21 +71,21 @@ model Category {
 }
 
 model Event {
-    id          BigInt            @id @default(autoincrement())
-    title       String            @db.VarChar
-    description String?           @db.VarChar
-    start_time  DateTime          @db.Timestamp(6)
-    end_time    DateTime?         @db.Timestamp(6)
-    location    String?           @db.VarChar
-    lat         Float?            @db.DoublePrecision
-    lng         Float?            @db.DoublePrecision
-    created_at  DateTime          @default(now()) @db.Timestamptz(6)
-    image_url   String?           @db.VarChar
-    location_id BigInt?
-    creator_id  BigInt
-    categories  EventCategories[]
-    creator     User              @relation(fields: [creator_id], references: [id])
-    Location    Location?         @relation(fields: [location_id], references: [id])
+    id              BigInt              @id @default(autoincrement())
+    title           String              @db.VarChar
+    description     String?             @db.VarChar
+    start_time      DateTime            @db.Timestamp(6)
+    end_time        DateTime?           @db.Timestamp(6)
+    location        String?             @db.VarChar
+    lat             Float?              @db.DoublePrecision
+    lng             Float?              @db.DoublePrecision
+    created_at      DateTime            @default(now()) @db.Timestamptz(6)
+    image_url       String?             @db.VarChar
+    location_id     BigInt?
+    creator_id      BigInt
+    categories      EventCategories[]
+    creator         User                @relation(fields: [creator_id], references: [id])
+    Location        Location?           @relation(fields: [location_id], references: [id])
     interestedUsers UserInterestEvent[]
 
     @@map("events")
@@ -106,22 +108,29 @@ enum UserRole {
     INSTITUTION
 }
 
+enum AccountStatus {
+    NO_VERIFIED // FINAL_USERS default status
+    VERIFIED // for all users
+    REJECTED // for ORGANIZERS, INSTITUTIONS, PROMOTERS
+    SUSPENDED // for all users
+}
+
 model Location {
-    id          BigInt   @id @default(autoincrement())
-    name        String
-    address     String
-    city        String
-    lat         Float
-    lng         Float
-    description String?
-    phone       String?
-    email       String?
-    website     String?
-    image_url   String?
-    creator_id  BigInt
-    created_at  DateTime @default(now()) @db.Timestamptz(6)
-    creator     User     @relation(fields: [creator_id], references: [id])
-    events      Event[]
+    id              BigInt                 @id @default(autoincrement())
+    name            String
+    address         String
+    city            String
+    lat             Float
+    lng             Float
+    description     String?
+    phone           String?
+    email           String?
+    website         String?
+    image_url       String?
+    creator_id      BigInt
+    created_at      DateTime               @default(now()) @db.Timestamptz(6)
+    creator         User                   @relation(fields: [creator_id], references: [id])
+    events          Event[]
     interestedUsers UserInterestLocation[]
 
     @@map("locations")
@@ -177,4 +186,55 @@ model UserInterestEvent {
 
     @@unique([user_id, event_id])
     @@map("user_interest_events")
+}
+
+enum RequestStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+enum RequestedRole {
+    ORGANIZER
+    INSTITUTION
+}
+
+model VerificationRequest {
+    id      BigInt    @id @default(autoincrement())
+    user_id BigInt
+
+    // Form data
+    contact_name     String
+    phone_number     String
+    requested_role   RequestedRole
+    business_name    String
+    socials_networks String[]
+    google_maps_url  String?
+    website_url      String?
+
+    // Uploaded documents
+    documents VerificationDocument[]
+
+    // Status tracking
+    status      RequestStatus @default(PENDING)
+    admin_notes String? // Notes from admin reviewing the request eg. reasons for rejection 
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    user User @relation(fields: [user_id], references: [id])
+    
+    @@map("verification_requests")
+}
+
+model VerificationDocument {
+    id          BigInt   @id @default(autoincrement())
+    request_id  BigInt
+    url         String
+    file_type   String? // pdf, jpg, png, etc
+    uploaded_at DateTime @default(now())
+
+    request VerificationRequest @relation(fields: [request_id], references: [id], onDelete: Cascade)
+    
+    @@map("verification_documents")
 }

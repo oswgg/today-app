@@ -8,6 +8,9 @@ import { UserInterestCategoriesModule } from './interests/categories/user-intere
 import { UserInterestLocationsModule } from './interests/locations/user-interest-locations.module';
 import { UserInterestOrganizersModule } from './interests/organizers/user-interest-organizers.module';
 import { UserInterestEventsModule } from './interests/events/user-interest-events.module';
+import { VERIFICATION_REQUESTS_REPO_TOKEN } from 'src/domain/repositories/verification-requests.repo';
+import { PrismaVerificationRequestRespositoryImpl } from 'src/infrastructure/database/prisma/prisma.verification-requests.repo.impl';
+import { CreateVerificationRequest } from 'src/application/use-cases/auth/verification-requests/create-verification-request.usecase';
 
 @Module({
     imports: [
@@ -22,7 +25,12 @@ import { UserInterestEventsModule } from './interests/events/user-interest-event
             provide: USER_REPO_TOKEN,
             useClass: PrismaUserRepository,
         },
+        {
+            provide: VERIFICATION_REQUESTS_REPO_TOKEN,
+            useClass: PrismaVerificationRequestRespositoryImpl,
+        },
         GetUser,
+        CreateVerificationRequest,
     ],
     controllers: [UserController],
 })

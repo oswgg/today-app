@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService as NestJwt } from '@nestjs/jwt';
 import { CreateJwtDto } from 'src/application/dtos/auth/create-jwt.dto';
 import { JwtConfig } from 'src/config/jwt.config';
-import { JWTPayload } from 'src/domain/entities/jwt-payload.entity';
+import { JWTPayload } from 'src/domain/entities/auth/jwt-payload.entity';
 import { JwtService } from 'src/domain/services/jwt.service';
 
 @Injectable()

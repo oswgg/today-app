@@ -83,6 +83,7 @@ export type I18nTranslations = {
                     "not_provided": string;
                 };
             };
+            "verification_request_exists": string;
         };
         "success": {
             "user_created": string;

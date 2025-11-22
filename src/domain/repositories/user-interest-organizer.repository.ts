@@ -1,4 +1,4 @@
-import { UserInterestOrganizerEntity } from '../entities/user-interest-organizer.entity';
+import { UserInterestOrganizerEntity } from '../entities/users/interests/user-interest-organizer.entity';
 
 export abstract class UserInterestOrganizerRepository {
     abstract validateExistingOrganizerIds(

@@ -1,4 +1,4 @@
-import { UserInterestEventEntity } from '../entities/user-interest-event.entity';
+import { UserInterestEventEntity } from '../entities/users/interests/user-interest-event.entity';
 import { EventEntity } from '../entities/event.entity';
 
 export abstract class UserInterestEventRepository {

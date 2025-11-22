@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserInterestEventRepository } from '../../../domain/repositories/user-interest-event.repository';
-import { UserInterestEventEntity } from '../../../domain/entities/user-interest-event.entity';
+import { UserInterestEventEntity } from '../../../domain/entities/users/interests/user-interest-event.entity';
 import { EventEntity } from '../../../domain/entities/event.entity';
 import { PrismaClient } from 'generated/prisma';
 

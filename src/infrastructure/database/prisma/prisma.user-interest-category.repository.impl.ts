@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserInterestCategoryRepository } from '../../../domain/repositories/user-interest-category.repository';
-import { UserInterestCategoryEntity } from '../../../domain/entities/user-interest-category.entity';
+import { UserInterestCategoryEntity } from '../../../domain/entities/users/interests/user-interest-category.entity';
 import { CategoryEntity } from '../../../domain/entities/category.entity';
 import { PrismaClient } from 'generated/prisma';
 

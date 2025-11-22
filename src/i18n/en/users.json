@@ -19,7 +19,8 @@
             "events": {
                 "not_provided": "No interest events provided"
             }
-        }
+        },
+        "verification_request_exists": "A verification request already exists for this user"
     },
     "success": {
         "user_created": "User created successfully",

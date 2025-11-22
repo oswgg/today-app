@@ -6,7 +6,7 @@ import {
 } from 'src/domain/repositories/user-interest-location.repository';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { AddInterestResultDto } from 'src/application/dtos/user/interests/shared/add-interest-result.dto';
-import { UserInterestLocationEntity } from 'src/domain/entities/user-interest-location.entity';
+import { UserInterestLocationEntity } from 'src/domain/entities/users/interests/user-interest-location.entity';
 
 @Injectable()
 export class AddInterestLocations {

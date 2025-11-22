@@ -27,7 +27,7 @@ import {
     OutputCreateLocationDto,
 } from 'src/application/dtos/locations/create-location.dto';
 import { User } from '../shared/decorators/user.decorator';
-import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
+import { JwtUserPayload } from 'src/domain/entities/auth/jwt-payload.entity';
 import { CreateLocation } from 'src/application/use-cases/locations';
 import { ListLocations } from 'src/application/use-cases/locations/list-locations.usecase';
 import { InputUpdateLocationDto } from 'src/application/dtos/locations/update-location.dto';

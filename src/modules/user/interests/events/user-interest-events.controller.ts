@@ -19,7 +19,7 @@ import { UserRoleGuard } from '../../../shared/guards/user-role.guard';
 import { RequiredRole } from '../../../shared/decorators/required-user-role.decorator';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { User } from '../../../shared/decorators/user.decorator';
-import { JwtUserPayload } from 'src/domain/entities/jwt-payload.entity';
+import { JwtUserPayload } from 'src/domain/entities/auth/jwt-payload.entity';
 import { ZodValidator } from 'src/infrastructure/http/validator/zod/zod.validator';
 import { ZodAddInterestEventsSchema } from 'src/infrastructure/http/validator/zod/user/interests/events/zod.add-interest-events.schema';
 import { ValidationPipe } from '../../../shared/pipes/validation.pipe';

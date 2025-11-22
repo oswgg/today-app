@@ -3,7 +3,7 @@ import { AuthGuard } from './auth.guard';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { JWTPayload } from 'src/domain/entities/jwt-payload.entity';
+import { JWTPayload } from 'src/domain/entities/auth/jwt-payload.entity';
 import { UserRole } from 'src/domain/types/user-role.enum';
 import { Request } from 'express';
 import { ConfigModule } from 'src/config/config.module';

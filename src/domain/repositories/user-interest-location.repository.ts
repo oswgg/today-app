@@ -1,4 +1,4 @@
-import { UserInterestLocationEntity } from '../entities/user-interest-location.entity';
+import { UserInterestLocationEntity } from '../entities/users/interests/user-interest-location.entity';
 import { LocationEntity } from '../entities/location.entity';
 
 export abstract class UserInterestLocationRepository {

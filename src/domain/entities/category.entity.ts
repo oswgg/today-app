@@ -1,4 +1,4 @@
-import { UserInterestCategoryEntity } from './user-interest-category.entity';
+import { UserInterestCategoryEntity } from './users/interests/user-interest-category.entity';
 
 export interface CategoryEntity {
     id: number | bigint;

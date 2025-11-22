@@ -1,4 +1,4 @@
-import { UserInterestCategoryEntity } from '../entities/user-interest-category.entity';
+import { UserInterestCategoryEntity } from '../entities/users/interests/user-interest-category.entity';
 import { CategoryEntity } from '../entities/category.entity';
 
 export abstract class UserInterestCategoryRepository {
