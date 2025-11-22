@@ -96,7 +96,7 @@ export class PrismaService<T, E extends object>
      * Convert nested object filters to Prisma relation filters using 'some'
      * Example: { categories: { id: { in: [1] } } }
      * -> { categories: { some: { id: { in: [1] } } } }
-     * 
+     *
      * By default, assumes 'many' relations (uses 'some')
      */
     private convertNestedFiltersToRelationFilters(
@@ -175,13 +175,14 @@ export class PrismaService<T, E extends object>
                     const nestedWhere = this.buildNestedRequiredWhere(
                         relation.include || [],
                     );
-                    
+
                     // Default to 'many' if relation type not specified
                     const relationType = relation.relation || 'many';
-                    
-                    filters[relation.model] = relationType === 'many'
-                        ? { some: nestedWhere }
-                        : nestedWhere;
+
+                    filters[relation.model] =
+                        relationType === 'many'
+                            ? { some: nestedWhere }
+                            : nestedWhere;
                 }
             } else if (relation.required && relation.where) {
                 // This level has the required filter
@@ -190,10 +191,11 @@ export class PrismaService<T, E extends object>
                 if (parentPath.length === 0) {
                     // Default to 'many' if relation type not specified
                     const relationType = relation.relation || 'many';
-                    
-                    filters[relation.model] = relationType === 'many'
-                        ? { some: whereCondition }
-                        : whereCondition;
+
+                    filters[relation.model] =
+                        relationType === 'many'
+                            ? { some: whereCondition }
+                            : whereCondition;
                 }
             }
         }

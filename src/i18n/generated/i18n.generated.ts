@@ -69,6 +69,20 @@ export type I18nTranslations = {
             "invalid_id": string;
             "update_failed": string;
             "delete_failed": string;
+            "interests": {
+                "categories": {
+                    "not_provided": string;
+                };
+                "locations": {
+                    "not_provided": string;
+                };
+                "organizers": {
+                    "not_provided": string;
+                };
+                "events": {
+                    "not_provided": string;
+                };
+            };
         };
         "success": {
             "user_created": string;

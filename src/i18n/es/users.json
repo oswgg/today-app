@@ -5,7 +5,21 @@
         "email_already_exists": "Ya existe un usuario con el mismo email",
         "invalid_id": "ID de usuario inválido",
         "update_failed": "Error al actualizar el usuario",
-        "delete_failed": "Error al eliminar el usuario"
+        "delete_failed": "Error al eliminar el usuario",
+        "interests": {
+            "categories": {
+                "not_provided": "No se proporcionaron categorías de interés"
+            },
+            "locations": {
+                "not_provided": "No se proporcionaron locations de interés"
+            },
+            "organizers": {
+                "not_provided": "No se proporcionaron organizadores de interés"
+            },
+            "events": {
+                "not_provided": "No se proporcionaron eventos de interés"
+            }
+        }
     },
     "success": {
         "user_created": "Usuario creado correctamente",
