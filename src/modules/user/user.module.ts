@@ -13,6 +13,7 @@ import { PrismaVerificationRequestRespositoryImpl } from 'src/infrastructure/dat
 import { CreateVerificationRequest } from 'src/application/use-cases/auth/verification-requests/create-verification-request.usecase';
 import { FILE_SERVICE_TOKEN } from 'src/domain/services/files.service';
 import { PureFileService } from 'src/infrastructure/services/pure.service.impl';
+import { SQZUserRepoImpl } from 'src/infrastructure/repositories/sqz.user.repo.impl';
 
 @Module({
     imports: [
@@ -25,7 +26,7 @@ import { PureFileService } from 'src/infrastructure/services/pure.service.impl';
         PrismaService,
         {
             provide: USER_REPO_TOKEN,
-            useClass: PrismaUserRepository,
+            useClass: SQZUserRepoImpl,
         },
         {
             provide: VERIFICATION_REQUESTS_REPO_TOKEN,

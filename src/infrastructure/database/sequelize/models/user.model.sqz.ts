@@ -61,7 +61,7 @@ export class UserModel extends Model {
         type: DataType.STRING,
         allowNull: true,
     })
-    uid: string;
+    declare uid: string;
 
     @Column({
         type: DataType.BOOLEAN,

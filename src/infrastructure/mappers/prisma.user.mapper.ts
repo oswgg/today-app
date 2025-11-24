@@ -11,6 +11,9 @@ export class PrismaUserMapper {
             role: data.role as UserRole,
             createdAt: new Date(data.created_at),
             uid: data.uid,
+            mfaEnabled: false,
+            mfaFactorId: null,
+            mfaRequired: false,
         };
     }
 
@@ -22,6 +25,9 @@ export class PrismaUserMapper {
             role: UserRole.ORGANIZER,
             createdAt: new Date(data.created_at),
             uid: data.uid,
+            mfaEnabled: false,
+            mfaFactorId: null,
+            mfaRequired: false,
         };
     }
 }

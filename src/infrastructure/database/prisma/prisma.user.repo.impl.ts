@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from 'src/domain/repositories/user.repository';
+import {
+    UpdateMfaDto,
+    UserRepository,
+} from 'src/domain/repositories/user.repository';
 import { PrismaService } from './prisma.service';
 import { PrismaUserMapper } from 'src/infrastructure/mappers/prisma.user.mapper';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
@@ -59,6 +62,17 @@ export class PrismaUserRepository
             },
         });
 
+        return PrismaUserMapper.toEntity(user);
+    }
+
+    async updateMfaSettings(
+        userId: number,
+        data: UpdateMfaDto,
+    ): Promise<UserEntity> {
+        const user = await this.user.update({
+            where: { id: userId },
+            data,
+        });
         return PrismaUserMapper.toEntity(user);
     }
 }

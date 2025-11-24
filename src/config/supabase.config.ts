@@ -24,4 +24,14 @@ export class SupabaseConfig {
         }
         return key;
     }
+
+    get supabaseServiceRoleKey(): string {
+        const key = this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY');
+        if (!key) {
+            throw new Error(
+                'SUPABASE_SERVICE_ROLE_KEY environment variable is required',
+            );
+        }
+        return key;
+    }
 }

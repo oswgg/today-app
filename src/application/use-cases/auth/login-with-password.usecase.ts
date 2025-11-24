@@ -38,6 +38,7 @@ export class LoginWithPassword {
                 user_email: user.email,
                 user_name: user.name,
                 user_role: user.role,
+                supabase_token: '', // Will be filled by the auth service
             },
         );
 

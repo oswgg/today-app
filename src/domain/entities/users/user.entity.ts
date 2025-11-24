@@ -8,5 +8,8 @@ export class UserEntity {
     role: UserRole;
     createdAt: Date;
     uid: string | null;
+    mfaEnabled: boolean;
+    mfaFactorId: string | null;
+    mfaRequired: boolean;
     interestCategories?: UserInterestCategoryEntity[];
 }

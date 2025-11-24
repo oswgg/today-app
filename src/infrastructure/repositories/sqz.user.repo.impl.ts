@@ -4,7 +4,10 @@ import {
     OrganizerEntity,
     UserEntity,
 } from 'src/domain/entities/users';
-import { UserRepository } from 'src/domain/repositories/user.repository';
+import {
+    UpdateMfaDto,
+    UserRepository,
+} from 'src/domain/repositories/user.repository';
 import { UserFromOAuth } from 'src/domain/services/auth.service';
 import { SequelizeService } from '../database/sequelize/sequelize.service';
 import { UserModel } from '../database/sequelize/models';
@@ -63,6 +66,19 @@ export class SQZUserRepoImpl
             role: UserRole.USER,
             uid: data.uid,
         });
+        return SQZUserMapper.toEntity(_user);
+    }
+
+    async updateMfaSettings(
+        userId: number,
+        data: UpdateMfaDto,
+    ): Promise<UserEntity> {
+        const _user = await this.userModel.findByPk(userId);
+        if (!_user) {
+            throw new Error('User not found');
+        }
+
+        await _user.update(data);
         return SQZUserMapper.toEntity(_user);
     }
 }

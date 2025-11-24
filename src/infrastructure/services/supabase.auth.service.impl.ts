@@ -92,6 +92,7 @@ export class SupabaseAuthService
                 email: claims.user_email,
                 name: claims.user_name,
                 role: claims.user_role,
+                supabaseToken: claims.supabase_token,
             },
         });
 
@@ -128,12 +129,21 @@ export class SupabaseAuthService
             );
         }
 
+        // Get the Supabase session token
+        const supabaseToken = data.session?.access_token;
+        if (!supabaseToken) {
+            throw new InternalServerErrorException(
+                'Failed to obtain Supabase session token',
+            );
+        }
+
         const customToken: string = this.jwtService.sign({
             user: {
                 id: claims.user_id,
                 email: claims.user_email,
                 name: claims.user_name,
                 role: claims.user_role,
+                supabaseToken: supabaseToken,
             },
         });
 

@@ -38,6 +38,9 @@ export class PrismaEventMapper {
                       role: event.creator.role as UserRole,
                       createdAt: event.creator.created_at,
                       uid: event.creator.uid,
+                      mfaEnabled: false,
+                      mfaFactorId: null,
+                      mfaRequired: false,
                   }
                 : undefined,
             categories: event.categories

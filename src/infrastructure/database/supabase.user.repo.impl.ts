@@ -1,5 +1,8 @@
 import { UserEntity, OrganizerEntity } from 'src/domain/entities/users';
-import { UserRepository } from 'src/domain/repositories/user.repository';
+import {
+    UpdateMfaDto,
+    UserRepository,
+} from 'src/domain/repositories/user.repository';
 import {
     SupabaseUserMapper,
     SupabaseUserRow,
@@ -101,5 +104,22 @@ export class SupabaseUserRepository
         });
 
         return user;
+    }
+
+    async updateMfaSettings(
+        userId: number,
+        data: UpdateMfaDto,
+    ): Promise<UserEntity> {
+        const { data: updatedUser, error } = await this.supabase
+            .from('users')
+            .update(data)
+            .eq('id', userId)
+            .select('*');
+
+        if (error) {
+            throw new Error('Failed to update MFA settings');
+        }
+
+        return SupabaseUserMapper.toEntity(updatedUser as SupabaseUserRow[]);
     }
 }

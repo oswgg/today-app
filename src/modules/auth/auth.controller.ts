@@ -2,9 +2,11 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
     Get,
     Post,
     Res,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -32,9 +34,18 @@ import { ZodRegisterWithOAuth } from 'src/infrastructure/http/validator/zod/auth
 import { RegisterWithOAuthDto } from 'src/application/dtos/auth/register-with-oauth.dto';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
+import { User } from '../shared/decorators/user.decorator';
+import { MfaEnrollDto } from 'src/application/dtos/auth/mfa-enroll.dto';
+import { MfaVerifyDto } from 'src/application/dtos/auth/mfa-verify.dto';
+import { JwtUserPayload } from 'src/domain/entities/auth/jwt-payload.entity';
+import { ZodMfaEnroll } from 'src/infrastructure/http/validator/zod/auth/zod.mfa-enroll.schema';
+import { ZodMfaVerify } from 'src/infrastructure/http/validator/zod/auth/zod.mfa-verify.schema';
+import { EnrollMfa } from 'src/application/use-cases/mfa/enroll-mfa.usecase';
+import { VerifyAndEnableMfa } from 'src/application/use-cases/mfa/verify-and-enable-mfa.usecase';
+import { GetMfaStatus } from 'src/application/use-cases/mfa/get-mfa-status.usecase';
+import { UnenrollMfa } from 'src/application/use-cases/mfa/unenroll-mfa.usecase';
 
 @ApiTags('auth')
-@Public()
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -43,9 +54,14 @@ export class AuthController {
         private readonly registerOganizerFromOAuth: RegisterOrganizerFromOAuth,
         private readonly loginWithOAuth: LoginWithOAuth,
         private readonly loginWithPassword: LoginWithPassword,
+        private readonly enrollMfaUseCase: EnrollMfa,
+        private readonly verifyAndEnableMfaUseCase: VerifyAndEnableMfa,
+        private readonly getMfaStatusUseCase: GetMfaStatus,
+        private readonly unenrollMfaUseCase: UnenrollMfa,
         private translator: I18nService<I18nTranslations>,
     ) {}
 
+    @Public()
     @Get('oauth/google')
     @ApiOperation({
         summary: 'Get Google OAuth URL',
@@ -56,6 +72,7 @@ export class AuthController {
         return res.redirect(await this.getGoogleOAuthURL.execute());
     }
 
+    @Public()
     @Post('register/oauth')
     @ApiRegisterWithOAuth()
     OAuthRegister(
@@ -91,6 +108,7 @@ export class AuthController {
         );
     }
 
+    @Public()
     @Post('login')
     @ApiLoginWithPassword()
     async LoginWithPassword(
@@ -100,6 +118,7 @@ export class AuthController {
         return await this.loginWithPassword.execute(body);
     }
 
+    @Public()
     @Post('login/oauth')
     @ApiLoginWithOAuth()
     OAuthLogin(
@@ -113,5 +132,86 @@ export class AuthController {
                 this.translator.t('auth.errors.invalid_token'),
             );
         return this.loginWithOAuth.execute(body.token);
+    }
+
+    // MFA Management Endpoints
+    @Post('mfa/enroll')
+    @ApiOperation({
+        summary: 'Enroll in MFA',
+        description:
+            'Start MFA enrollment process. Returns QR code for TOTP setup.',
+    })
+    @ApiResponse({ status: 201, description: 'MFA enrollment initiated' })
+    async enrollMfa(
+        @User() user: JwtUserPayload,
+        @Body(new ValidationPipe(new ZodValidator(ZodMfaEnroll)))
+        body: MfaEnrollDto,
+    ) {
+        if (!user.supabaseToken) {
+            throw new UnauthorizedException(
+                'Supabase token is missing from your session. Please login again.',
+            );
+        }
+
+        return await this.enrollMfaUseCase.execute(
+            Number(user.id),
+            body.factorType,
+            user.supabaseToken,
+            body.friendlyName,
+        );
+    }
+
+    @Post('mfa/verify')
+    @ApiOperation({
+        summary: 'Verify and enable MFA',
+        description: 'Verify MFA code and enable MFA for the user.',
+    })
+    @ApiResponse({ status: 200, description: 'MFA enabled successfully' })
+    async verifyAndEnableMfa(
+        @User() user: JwtUserPayload,
+        @Body(new ValidationPipe(new ZodValidator(ZodMfaVerify)))
+        body: MfaVerifyDto,
+    ) {
+        if (!user.supabaseToken) {
+            throw new UnauthorizedException(
+                'Supabase token is missing from your session. Please login again.',
+            );
+        }
+
+        return await this.verifyAndEnableMfaUseCase.execute(
+            Number(user.id),
+            body.factorId,
+            body.code,
+            user.supabaseToken,
+        );
+    }
+
+    @Get('mfa/status')
+    @ApiOperation({
+        summary: 'Get MFA status',
+        description: 'Get current MFA status for the authenticated user.',
+    })
+    @ApiResponse({ status: 200, description: 'MFA status retrieved' })
+    async getMfaStatus(@User() user: JwtUserPayload) {
+        return await this.getMfaStatusUseCase.execute(Number(user.id));
+    }
+
+    @Delete('mfa/unenroll')
+    @ApiOperation({
+        summary: 'Disable MFA',
+        description: 'Unenroll and disable MFA for the user.',
+    })
+    @ApiResponse({ status: 200, description: 'MFA disabled successfully' })
+    async unenrollMfa(@User() user: JwtUserPayload) {
+        if (!user.supabaseToken) {
+            throw new UnauthorizedException(
+                'Supabase token is missing from your session. Please login again.',
+            );
+        }
+
+        return await this.unenrollMfaUseCase.execute(
+            Number(user.id),
+            user.supabaseToken,
+        );
     }
 }

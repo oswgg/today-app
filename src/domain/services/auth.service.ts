@@ -18,6 +18,7 @@ export interface Claims {
     user_name: string;
     user_role: UserRole;
     user_id: number | bigint;
+    supabase_token: string;
 }
 
 export interface AuthService {

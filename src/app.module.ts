@@ -9,15 +9,22 @@ import { JWT_SERVICE_TOKEN } from './domain/services/jwt.service';
 import { NestJwtService } from './infrastructure/services/nest.jwt.service.impl';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './modules/shared/guards/auth.guard';
+import { MfaGuard } from './modules/shared/guards/mfa.guard';
 import { LocationsModule } from './modules/locations/locations.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { SequelizeModule } from './infrastructure/database/sequelize/sqz.database.module';
 
 @Module({
     providers: [
         {
             provide: APP_GUARD,
             useClass: AuthGuard,
+        },
+        {
+            provide: APP_GUARD,
+            useClass: MfaGuard,
         },
         {
             provide: JWT_SERVICE_TOKEN,
@@ -35,6 +42,8 @@ import { join } from 'path';
         UserModule,
         EventsModule,
         LocationsModule,
+        AdminModule,
+        SequelizeModule,
     ],
     controllers: [AppController],
 })

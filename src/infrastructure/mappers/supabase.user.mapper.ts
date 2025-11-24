@@ -21,6 +21,9 @@ export class SupabaseUserMapper {
             role: rows[0].role as UserRole,
             createdAt: new Date(rows[0].created_at),
             uid: rows[0].uid,
+            mfaEnabled: false,
+            mfaFactorId: null,
+            mfaRequired: false,
         };
     }
 
@@ -44,6 +47,9 @@ export class SupabaseUserMapper {
             role: UserRole.ORGANIZER,
             createdAt: new Date(rows[0].created_at),
             uid: rows[0].uid,
+            mfaEnabled: false,
+            mfaFactorId: null,
+            mfaRequired: false,
         };
     }
 }

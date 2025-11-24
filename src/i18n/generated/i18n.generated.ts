@@ -30,6 +30,12 @@ export type I18nTranslations = {
             "organizer_role_required": string;
             "institution_role_required": string;
             "inssufficient_user_role": string;
+            "supabase_token_missing": string;
+            "mfa": {
+                "enabled_required": string;
+                "code_required": string;
+                "code_invalid": string;
+            };
         };
         "success": {
             "login_success": string;

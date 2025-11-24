@@ -33,6 +33,7 @@ export class LoginWithOAuth {
             user_email: user.email,
             user_name: user.name,
             user_id: user.id,
+            supabase_token: token,
         });
 
         return authResult;

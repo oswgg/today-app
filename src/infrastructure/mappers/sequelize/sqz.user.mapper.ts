@@ -11,6 +11,9 @@ export class SQZUserMapper {
             role: model.role,
             createdAt: model.createdAt,
             uid: model.uid,
+            mfaEnabled: model.mfaEnabled,
+            mfaFactorId: model.mfaFactorId,
+            mfaRequired: model.mfaRequired,
         };
     }
 
@@ -22,6 +25,9 @@ export class SQZUserMapper {
             role: UserRole.ORGANIZER,
             createdAt: model.createdAt,
             uid: model.uid,
+            mfaEnabled: model.mfaEnabled,
+            mfaFactorId: model.mfaFactorId,
+            mfaRequired: model.mfaRequired,
         };
     }
 }
